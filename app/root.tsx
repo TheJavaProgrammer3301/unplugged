@@ -51,7 +51,6 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
 	let stack: string | undefined;
 
 	if (isRouteErrorResponse(error)) {
-		if (error.status === 404) location.assign("/");
 		message = error.status === 404 ? "404" : "Error";
 		details =
 			error.status === 404

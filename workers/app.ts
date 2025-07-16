@@ -1,6 +1,6 @@
+import type { Route } from "@tsndr/cloudflare-worker-router";
 import { createRequestHandler } from "react-router";
 import { MAIN_ROUTER } from "./setup";
-import type { Route, Router } from "@tsndr/cloudflare-worker-router";
 
 interface HackableRouter {
 	getRoute(request: Request): Route<any, any, any> | undefined;

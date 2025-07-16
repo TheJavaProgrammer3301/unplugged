@@ -1,6 +1,6 @@
 import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
-import { getMessage } from "workers/api";
+import { getMessage } from "workers/read-api";
 
 export function meta({ }: Route.MetaArgs) {
 	return [
