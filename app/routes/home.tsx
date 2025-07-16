@@ -1,6 +1,5 @@
-import type { Route } from "./+types/home";
 import { Welcome } from "../welcome/welcome";
-import { getMessage } from "workers/read-api";
+import type { Route } from "./+types/home";
 
 export function meta({ }: Route.MetaArgs) {
 	return [
@@ -9,10 +8,6 @@ export function meta({ }: Route.MetaArgs) {
 	];
 }
 
-export function loader({ context }: Route.LoaderArgs) {
-	return { message: getMessage() };
-}
-
-export default function Home({ loaderData }: Route.ComponentProps) {
-	return <Welcome message={loaderData.message} />;
+export default function Home({ }: Route.ComponentProps) {
+	return <Welcome />;
 }
