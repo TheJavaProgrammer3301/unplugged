@@ -1,5 +1,5 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
-import { createAccount, createAccountAndLogIn } from "./write-api";
+import { createAccount, createAccountAndLogIn, logIn } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -24,6 +24,16 @@ router.post(`${BACKEND_PREFIX}/create-account-and-log-in`, async (request) => {
 	}
 
 	return createAccountAndLogIn(request.env, body.email, body.name, body.password);
+});
+
+router.post(`${BACKEND_PREFIX}/log-in`, async (request) => {
+	const body = await request.req.json() as any;
+
+	if (!body.email || !body.password) {
+		return new Response("Missing email or password", { status: 400 });
+	}
+
+	return logIn(request.env, body.email, body.password);
 });
 
 export const MAIN_ROUTER = router;
