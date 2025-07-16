@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import "./welcome.css"
 
 export default function Dashboard() {
   const [showPopup, setShowPopup] = useState(false);

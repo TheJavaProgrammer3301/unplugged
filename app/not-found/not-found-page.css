@@ -1,0 +1,86 @@
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e0e0e0;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.phone-container {
+  width: 320px;
+  height: 600px;
+  background: linear-gradient(145deg, #1a1a40, #4b0082, #6a00ff);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 40px rgba(106, 0, 255, 0.7);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #dcd6f7;
+  text-align: center;
+}
+
+.notfound-title {
+  font-size: 6rem;
+  font-weight: 900;
+  color: #ff416c;
+  text-shadow: 0 0 20px #ff4b2b;
+  margin: 0;
+  user-select: none;
+}
+
+.notfound-message {
+  font-size: 1.4rem;
+  margin: 1rem 0 2rem;
+  line-height: 1.4;
+  color: #e6e0ff;
+  text-shadow: 0 1px 4px rgba(75, 0, 130, 0.8);
+}
+
+.notfound-emoji {
+  font-size: 4rem;
+  margin-bottom: 3rem;
+  user-select: none;
+  filter: drop-shadow(0 0 8px #ff416c);
+  animation: pulse 2.5s infinite alternate ease-in-out;
+}
+
+.back-home-button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #e0f7ff;
+  font-weight: 700;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-size: 1.1rem;
+  box-shadow: 0 4px 14px rgba(0, 114, 255, 0.8);
+  user-select: none;
+}
+
+.back-home-button:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.9);
+}
+
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 8px #ff416c);
+  }
+  100% {
+    filter: drop-shadow(0 0 20px #ff4b2b);
+  }
+}
