@@ -4,8 +4,8 @@ import { getMessage } from "workers/api";
 
 export function meta({ }: Route.MetaArgs) {
 	return [
-		{ title: "New React Router App" },
-		{ name: "description", content: "Welcome to React Router!" },
+		{ title: "NOT FOUND" },
+		{ name: "description", content: "The requested page could not be found." },
 	];
 }
 
@@ -13,6 +13,6 @@ export function loader({ context }: Route.LoaderArgs) {
 	return { message: getMessage() };
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function NotFound({ loaderData }: Route.ComponentProps) {
 	return <Welcome message={loaderData.message} />;
 }
