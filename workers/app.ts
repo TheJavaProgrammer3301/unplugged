@@ -23,7 +23,7 @@ const requestHandler = createRequestHandler(
 export default {
 	async fetch(request, env, ctx) {
 		const route = (MAIN_ROUTER as unknown as HackableRouter).getRoute(request);
-		
+
 		if (route) return MAIN_ROUTER.handle(request, env, ctx);
 		else return requestHandler(request, {
 			cloudflare: { env, ctx },
