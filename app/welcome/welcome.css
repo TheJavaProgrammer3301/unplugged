@@ -1,0 +1,177 @@
+/* index.css */
+
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e0e0e0;
+}
+
+.app-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.phone-container {
+  width: 320px;
+  height: 600px;
+  background: linear-gradient(145deg, #1a1a40, #4b0082, #6a00ff);
+  border-radius: 1.5rem;
+  box-shadow: 0 8px 40px rgba(106, 0, 255, 0.7);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  color: #dcd6f7;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.dot-group {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  background: radial-gradient(circle at center, #6a00ff, #4b0082);
+  border-radius: 50%;
+  box-shadow: 0 0 8px #6a00ff;
+}
+
+.stats {
+  text-align: right;
+  font-size: 0.875rem;
+  color: #b3a1ff;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  margin-bottom: 0.25rem;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
+  color: #ccc6ff;
+}
+
+.greeting {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #e6e0ff;
+  text-shadow: 0 1px 4px rgba(75, 0, 130, 0.8);
+}
+
+
+/* Restore button grid to two columns */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Feature buttons styling */
+.feature-button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  padding: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 14px rgba(0, 114, 255, 0.8);
+  border: none;
+  color: #e0f7ff;
+  cursor: pointer;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: 100%;
+  min-height: 80px;
+}
+
+.feature-button:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.9);
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* AI Therapy button with cropped logo */
+
+/* Make .ai-therapy height fit content, no stretching */
+.ai-therapy {
+  /* existing styles */
+  background: linear-gradient(90deg, #ff416c, #ff4b2b);
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  box-shadow: 0 6px 20px rgba(255, 65, 108, 0.7);
+  color: white;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  overflow: hidden;
+  position: relative;
+
+  height: auto;
+  max-height: 45px;
+
+  /* Add pointer cursor */
+  cursor: pointer;
+
+  /* Add smooth transition */
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+}
+
+/* Hover effect matching feature buttons */
+.ai-therapy:hover {
+  background: linear-gradient(90deg, #ff4b2b, #ff416c);
+  box-shadow: 0 8px 28px rgba(255, 75, 70, 0.9);
+  transform: scale(1.05);
+}
+
+/* Keep the rest as-is */
+.ai-therapy > span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  z-index: 1;
+  font-size: 1.1rem;
+  padding-left: 0.8rem;
+  padding-right: 0rem;
+}
+
+.ai-therapy > img {
+  flex: 1.5;
+  height: 200%;
+  width: 200%;
+  position: relative;
+  top: -5%;
+  left: 3%;
+  object-fit: cover;
+  object-position: center;
+  filter: drop-shadow(0 0 3px rgba(255, 65, 108, 0.8));
+  pointer-events: none;
+  user-select: none;
+}
+
+
+
+
