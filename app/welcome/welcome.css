@@ -111,66 +111,88 @@ body {
 
 /* Make .ai-therapy height fit content, no stretching */
 .ai-therapy {
-  /* existing styles */
-  background: linear-gradient(90deg, #ff416c, #ff4b2b);
-  padding: 0.85rem 1rem;
+  width: 100%;
+  height: 56px;
+  padding: 0 1rem;
   border-radius: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: auto;
+  background: linear-gradient(90deg, #ff416c, #ff4b2b);
   box-shadow: 0 6px 20px rgba(255, 65, 108, 0.7);
   color: white;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-
+  cursor: pointer;
+  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
   overflow: hidden;
   position: relative;
-
-  height: auto;
-  max-height: 45px;
-
-  /* Add pointer cursor */
-  cursor: pointer;
-
-  /* Add smooth transition */
-  transition: background 0.4s ease, box-shadow 0.4s ease, transform 0.3s ease;
+  margin-top: auto;
 }
 
-/* Hover effect matching feature buttons */
 .ai-therapy:hover {
   background: linear-gradient(90deg, #ff4b2b, #ff416c);
   box-shadow: 0 8px 28px rgba(255, 75, 70, 0.9);
   transform: scale(1.05);
 }
 
-/* Keep the rest as-is */
 .ai-therapy > span {
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: relative;
-  z-index: 1;
-  font-size: 1.1rem;
-  padding-left: 0.8rem;
-  padding-right: 0rem;
+  font-size: 1rem;
+  padding-left: 0.25rem;
 }
 
 .ai-therapy > img {
-  flex: 1.5;
-  height: 200%;
-  width: 200%;
-  position: relative;
-  top: -5%;
-  left: 3%;
+  height: 100%;
+  max-height: 48px;
+  width: auto;
+  aspect-ratio: 2 / 1;
   object-fit: cover;
   object-position: center;
+  margin-left: auto;
   filter: drop-shadow(0 0 3px rgba(255, 65, 108, 0.8));
   pointer-events: none;
   user-select: none;
 }
+
+/* Popup styles */
+.ai-popup {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: linear-gradient(135deg, #1f1a3d, #4b2b6a);
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  box-shadow: 0 8px 20px rgba(75, 0, 130, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 160px;
+  z-index: 1000;
+  user-select: none;
+}
+
+.ai-popup button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #e0f7ff;
+  font-weight: 600;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.9rem;
+}
+
+.ai-popup button:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  box-shadow: 0 6px 14px rgba(0, 198, 255, 0.9);
+  color: #fff;
+  transform: scale(1.05);
+}
+
 
 
 
