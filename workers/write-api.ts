@@ -60,3 +60,11 @@ export async function createAccountAndLogIn(env: Env, email: string, name: strin
 
 	return createSession(env, userId);
 }
+
+export async function logIn(env: Env, email: string, password: string): Promise<Response> {
+	const user = await env.DB.prepare('SELECT * FROM users WHERE email = ? AND password = ?').bind(email, password).first();
+
+	if (!user) return new Response("Invalid email or password", { status: 401 });
+
+	return createSession(env, user.id as string);
+}

@@ -1,70 +1,80 @@
-import React, { useState, useEffect, useRef } from "react";
-import "./welcome.css"
+import { useEffect, useRef, useState } from "react";
+import type { SanitizedUserData } from "workers/read-api";
+import "./welcome.css";
+import { useNavigate } from "react-router";
 
-export default function Dashboard() {
-  const [showPopup, setShowPopup] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {
+	const navigate = useNavigate();
 
-  // Close popup on outside click
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setShowPopup(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+	useEffect(() => {
+		if (!accountInfo) navigate("/login", { replace: true });
+	}, [accountInfo]);
 
-  return (
-    <div className="app-wrapper">
-      <div className="phone-container">
-        {/* Top Bar */}
-        <div className="top-bar">
-          <div className="dot-group">
-            <div className="dot"></div>
-            <div className="dot"></div>
-            <div className="dot"></div>
-          </div>
-          <div className="stats">
-            <div className="stat-box">💰 500 💎 35</div>
-            <div className="stat-box">🔥 27</div>
-          </div>
-        </div>
+	if (!accountInfo) return <></>;
 
-        {/* Greeting */}
-        <h1 className="greeting">Hello, {'{username}'}</h1>
+	const [showPopup, setShowPopup] = useState(false);
+	const containerRef = useRef<HTMLDivElement>(null);
 
-        {/* Feature Buttons */}
-        <div className="button-grid">
-          <button className="feature-button">Quote Bank</button>
-          <button className="feature-button">Journal</button>
-          <button className="feature-button">Daily Routine</button>
-          <button className="feature-button">Mind Bank</button>
-        </div>
+	// Close popup on outside click
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+				setShowPopup(false);
+			}
+		}
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
 
-        {/* AI Therapy Button with Popup at Bottom */}
-        <div ref={containerRef} style={{ position: "relative", marginTop: "auto" }}>
-          <button
-            className="ai-therapy"
-            type="button"
-            onClick={() => setShowPopup((v) => !v)}
-          >
-            <span>AI Therapy</span>
-            <img
-              src="app/welcome/theryn-ai-logo.png"
-              alt="Theryn AI Logo"
-            />
-          </button>
+	return (
+		<div className="app-wrapper">
+			<div className="phone-container">
+				{/* Top Bar */}
+				<div className="top-bar">
+					<div className="dot-group">
+						<div className="dot"></div>
+						<div className="dot"></div>
+						<div className="dot"></div>
+					</div>
+					<div className="stats">
+						<div className="stat-box">💰 {accountInfo.coins} 💎 {accountInfo.diamonds}</div>
+						<div className="stat-box">🔥 {accountInfo.streak}</div>
+					</div>
+				</div>
 
-          {showPopup && (
-            <div className="ai-popup">
-              <button onClick={() => alert("Start New Chat!")}>New Chat</button>
-              <button onClick={() => alert("Open Saved Chats!")}>Saved Chats</button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
+				{/* Greeting */}
+				<h1 className="greeting">Hello, {accountInfo.name}</h1>
+
+				{/* Feature Buttons */}
+				<div className="button-grid">
+					<button className="feature-button">Quote Bank</button>
+					<button className="feature-button">Journal</button>
+					<button className="feature-button">Daily Routine</button>
+					<button className="feature-button">Mind Bank</button>
+				</div>
+
+				{/* AI Therapy Button with Popup at Bottom */}
+				<div ref={containerRef} style={{ position: "relative", marginTop: "auto" }}>
+					<button
+						className="ai-therapy"
+						type="button"
+						onClick={() => setShowPopup((v) => !v)}
+					>
+						<span>AI Therapy</span>
+						<img
+							src="app/welcome/theryn-ai-logo.png"
+							alt="Theryn AI Logo"
+						/>
+					</button>
+
+					{showPopup && (
+						<div className="ai-popup">
+							<button onClick={() => alert("Start New Chat!")}>New Chat</button>
+							<button onClick={() => alert("Open Saved Chats!")}>Saved Chats</button>
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	);
 }
