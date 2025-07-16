@@ -1,11 +1,17 @@
-export async function createAccount(env: Env, name: string, password: string): Promise<Response> {
+export async function createAccount(env: Env, email: string, name: string, password: string): Promise<Response> {
 	const id = crypto.randomUUID();
 
-	const statement = env.DB.prepare("INSERT INTO users (id, name, password) VALUES (?, ?, ?)");
+	// check if account with email already exists
+	const checkStatement = env.DB.prepare("SELECT COUNT(*) FROM users WHERE email = ?");
+	const result = await checkStatement.bind(email).first();
+	const count = result?.['COUNT(*)'] as number | null;
 
-	statement.bind(id, name, password);
+	if (count && count > 0) return new Response("Account with that email already exists", { status: 409 });
 
-	console.log(await env.DB.prepare("SELECT 1;").all());
+	const statement = env.DB.prepare("INSERT INTO users (id, name, email, password) VALUES ('?', '?', '?', '?')");
+
+	// console.log(id);
+	statement.bind(id, name, email, password);
 
 	try {
 		await statement.run();
