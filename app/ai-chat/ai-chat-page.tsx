@@ -32,7 +32,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 		if (!chatId) {
 			// make new convo
-			const response = await fetch("/api/conversation", {
+			const response = await fetch("/api/conversations", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"

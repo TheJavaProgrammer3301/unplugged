@@ -1,6 +1,5 @@
-import React from "react";
-import "./saved-chats-page.css";
 import { useNavigate } from "react-router";
+import "./saved-chats-page.css";
 
 const mockChats = [
   {
@@ -20,7 +19,11 @@ const mockChats = [
   },
 ];
 
-export default function SavedChatsPage() {
+export default function SavedChatsPage({ savedChats }: { savedChats: {
+    id: string;
+    lastUpdatedAt: number;
+    name: string;
+}[] }) {
   const navigate = useNavigate();
 
   return (
@@ -34,11 +37,11 @@ export default function SavedChatsPage() {
         </div>
 
         <div className="chat-list">
-          {mockChats.map((chat) => (
+          {savedChats.map((chat) => (
             <div key={chat.id} className="chat-card">
               <div className="chat-info">
-                <h2 className="chat-title">{chat.title}</h2>
-                <span className="chat-timestamp">{chat.timestamp}</span>
+                <h2 className="chat-title">{chat.name}</h2>
+                <span className="chat-timestamp">{new Date(chat.lastUpdatedAt).toLocaleString()}</span>
               </div>
               <button
                 className="open-chat-button"

@@ -17,13 +17,6 @@
 			"database_id": "e7f825f7-36fb-4ac8-95bf-30e58e688d10",
 			"experimental_remote": true
 		}
-	],
-	"kv_namespaces": [
-		{
-			"binding": "CONVERSATIONS",
-			"id": "847760bec4984f9da57a8745c9f133f4",
-			"experimental_remote": true
-		}
 	]
 	/**
 	 * Smart Placement

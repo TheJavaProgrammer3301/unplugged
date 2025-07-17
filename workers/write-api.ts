@@ -2,6 +2,7 @@ import * as EmailValidator from 'email-validator';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
+//#region utility
 export async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string) {
 	const newMessages: ChatCompletionMessageParam[] = [{ role: "user", content: input }];
 
@@ -23,10 +24,51 @@ export async function addMessageToConversation(env: Env, conversation: ChatCompl
 
 	const finalConversation: ChatCompletionMessageParam[] = [...conversation, ...newMessages];
 
-	await env.CONVERSATIONS.put(`${conversationId}`, JSON.stringify(finalConversation));
+	const statement = env.DB
+		.prepare('UPDATE conversations SET content = ?, lastUpdatedAt = ? WHERE id = ?')
+		.bind(JSON.stringify(finalConversation), Date.now(), conversationId);
+	await statement.run();
 
 	return finalConversation;
 }
+
+export async function getSavedChats(env: Env, userId: string): Promise<{ id: string; lastUpdatedAt: number; name: string }[]> {
+	const result = await env.DB
+		.prepare('SELECT id, lastUpdatedAt, name FROM conversations WHERE user = ?')
+		.bind(userId)
+		.all();
+
+	return result.results.map(row => ({
+		id: row.id as string,
+		lastUpdatedAt: row.lastUpdatedAt as number,
+		name: (row.name ?? "none") as string
+	}));
+}
+
+// generate a name based on current conversation
+export async function generateNameForConversation(env: Env, conversation: ChatCompletionMessageParam[]): Promise<string> {
+	const client = new OpenAI({
+		apiKey: env.OPENAI_API_KEY
+	});
+
+	const response = await client.chat.completions.create({
+		model: "gpt-4o",
+		messages: [
+			...conversation,
+			{ role: "user", content: "What should we name this conversation? Reply with just the name" }
+		]
+	});
+
+	return response.choices[0]?.message.content ?? "Untitled Conversation";
+}
+
+export async function setNameOfConversation(env: Env, conversationId: string, name: string): Promise<void> {
+	const statement = env.DB
+		.prepare('UPDATE conversations SET name = ? WHERE id = ?')
+		.bind(name, conversationId);
+	await statement.run();
+}
+//#endregion utility
 
 export async function createAccount(env: Env, email: string, name: string, password: string): Promise<Response> {
 	const id = crypto.randomUUID();
@@ -79,26 +121,36 @@ export async function createSession(env: Env, id: string): Promise<Response> {
 export async function createConversation(env: Env, userId: string): Promise<string> {
 	const conversationId = crypto.randomUUID();
 
-	await env.CONVERSATIONS.put(`${conversationId}`, JSON.stringify({}), { metadata: { userId } });
+	const statement = env.DB
+		.prepare('INSERT INTO conversations (id, user, content, lastUpdatedAt) VALUES (?, ?, ?, ?)')
+		.bind(conversationId, userId, JSON.stringify([]), Date.now());
+	await statement.run();
 
 	return conversationId;
 }
 
 export async function getConversation(env: Env, conversationId: string): Promise<ChatCompletionMessageParam[]> {
-	const conversation = await env.CONVERSATIONS.get(conversationId, { type: "json" });
+	const result = await env.DB
+		.prepare('SELECT content FROM conversations WHERE id = ?')
+		.bind(conversationId)
+		.first();
 
-	if (!conversation) throw `not found`;
+	if (!result) throw `not found`;
 
-	return conversation as ChatCompletionMessageParam[];
+	return JSON.parse(result.content as string) as ChatCompletionMessageParam[];
 }
 
 export async function sendMessageToConversation(env: Env, conversationId: string, input: string): Promise<Response> {
-	const conversation = await env.CONVERSATIONS.get(conversationId, { type: "json" });
+	const result = await env.DB
+		.prepare('SELECT content FROM conversations WHERE id = ?')
+		.bind(conversationId)
+		.first();
 
-	if (!conversation) return new Response("Conversation not found", { status: 404 });
+	if (!result) return new Response("Conversation not found", { status: 404 });
 
 	try {
-		const finalConversation = await addMessageToConversation(env, conversation as ChatCompletionMessageParam[], conversationId, input);
+		const conversation = JSON.parse(result.content as string) as ChatCompletionMessageParam[];
+		const finalConversation = await addMessageToConversation(env, conversation, conversationId, input);
 	
 		return Response.json(finalConversation);
 	} catch (e) {
