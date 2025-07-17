@@ -1,5 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
-import { createAccount, createAccountAndLogIn, logIn } from "./write-api";
+import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
+import { createAccount, createAccountAndLogIn, createConversation, logIn, sendMessageToConversation } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -16,7 +17,7 @@ router.post(`${BACKEND_PREFIX}/create-account`, async (request) => {
 	return createAccount(request.env, body.email, body.name, body.password);
 });
 
-router.post(`${BACKEND_PREFIX}/create-account-and-log-in`, async (request) => {
+router.post(`${BACKEND_PREFIX}/create-account-and-session`, async (request) => {
 	const body = await request.req.json() as any;
 
 	if (!body.name || !body.password || !body.email) {
@@ -26,7 +27,7 @@ router.post(`${BACKEND_PREFIX}/create-account-and-log-in`, async (request) => {
 	return createAccountAndLogIn(request.env, body.email, body.name, body.password);
 });
 
-router.post(`${BACKEND_PREFIX}/log-in`, async (request) => {
+router.post(`${BACKEND_PREFIX}/create-session`, async (request) => {
 	const body = await request.req.json() as any;
 
 	if (!body.email || !body.password) {
@@ -34,6 +35,24 @@ router.post(`${BACKEND_PREFIX}/log-in`, async (request) => {
 	}
 
 	return logIn(request.env, body.email, body.password);
+});
+
+router.post(`${BACKEND_PREFIX}/create-conversation`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.startMessage) {
+		return new Response("Missing start message", { status: 400 });
+	}
+
+	const convoId = await createConversation(request.env, userId);
+	const response = await sendMessageToConversation(request.env, convoId, body.startMessage);
+
+	return response;
 });
 
 export const MAIN_ROUTER = router;

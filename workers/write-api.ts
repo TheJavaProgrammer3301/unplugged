@@ -1,4 +1,32 @@
 import * as EmailValidator from 'email-validator';
+import OpenAI from 'openai';
+import type { ChatCompletionMessageParam } from 'openai/resources';
+
+async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string) {
+	const newMessages: ChatCompletionMessageParam[] = [{ role: "user", content: input }];
+
+	const client = new OpenAI({
+		apiKey: env.OPENAI_API_KEY
+	});
+
+	const response = await client.chat.completions.create({
+		model: "gpt-4o",
+		messages: [
+			...conversation,
+			...newMessages
+		]
+	});
+
+	const message = response.choices[0]?.message as ChatCompletionMessageParam | undefined;
+
+	newMessages.push(message!);
+
+	const finalConversation: ChatCompletionMessageParam[] = [...conversation, ...newMessages];
+
+	await env.CONVERSATIONS.put(`${conversationId}`, JSON.stringify(finalConversation));
+
+	return finalConversation;
+}
 
 export async function createAccount(env: Env, email: string, name: string, password: string): Promise<Response> {
 	const id = crypto.randomUUID();
@@ -46,6 +74,37 @@ export async function createSession(env: Env, id: string): Promise<Response> {
 		session: sessionId,
 		userId: id
 	}, { status: 201 });
+}
+
+export async function createConversation(env: Env, userId: string): Promise<string> {
+	const conversationId = crypto.randomUUID();
+
+	await env.CONVERSATIONS.put(`${conversationId}`, JSON.stringify({}), { metadata: { userId } });
+
+	return conversationId;
+}
+
+export async function getConversation(env: Env, conversationId: string): Promise<ChatCompletionMessageParam[]> {
+	const conversation = await env.CONVERSATIONS.get(conversationId, { type: "json" });
+
+	if (!conversation) throw `not found`;
+
+	return conversation as ChatCompletionMessageParam[];
+}
+
+export async function sendMessageToConversation(env: Env, conversationId: string, input: string): Promise<Response> {
+	const conversation = await env.CONVERSATIONS.get(conversationId, { type: "json" });
+
+	if (!conversation) return new Response("Conversation not found", { status: 404 });
+
+	try {
+		const finalConversation = await addMessageToConversation(env, conversation as ChatCompletionMessageParam[], conversationId, input);
+	
+		return Response.json(finalConversation);
+	} catch (e) {
+		console.warn(e);
+		return new Response("Server error", { status: 500 });
+	}
 }
 
 // bindings
