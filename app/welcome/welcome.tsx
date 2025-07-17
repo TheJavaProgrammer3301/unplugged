@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { SanitizedUserData } from "workers/read-api";
 import "./welcome.css";
 import { useNavigate } from "react-router";
+import therynLogo from "../assets/theryn-logo.png";
 
 export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {
 	const navigate = useNavigate();
