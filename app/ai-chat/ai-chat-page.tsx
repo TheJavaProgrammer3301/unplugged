@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import "./ai-chat-page.css";
 import therynLogo from "./theryn.png"; // Make sure this path is correct
 

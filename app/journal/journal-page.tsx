@@ -1,6 +1,6 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import "./journal-page.css";
-import { useNavigate } from "react-router-dom";
 
 export default function JournalPage() {
   const navigate = useNavigate();

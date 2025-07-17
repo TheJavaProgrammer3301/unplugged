@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
+import { useNavigate } from "react-router";
 import "./quote-bank-page.css";
-import { useNavigate } from "react-router-dom";
 
 const allQuotes = [
   { text: "\"Nobody owes you nothin’. You owe yourself.\" - Rocky Balboa", category: "motivation" },
