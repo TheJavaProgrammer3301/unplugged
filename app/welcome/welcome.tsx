@@ -67,7 +67,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 					<button className="feature-button" onClick={() => navigate("/quote-bank")}>Quote Bank</button>
 					<button className="feature-button" onClick={() => navigate("/journal")}>Journal</button>
 					<button className="feature-button">Daily Routine</button>
-					<button className="feature-button">Mind Bank</button>
+					<button className="feature-button" onClick={() => navigate("/mind-bank")}>Mind Bank</button>
 				</div>
 
 				<div ref={containerRef} style={{ position: "relative", marginTop: "auto" }}>

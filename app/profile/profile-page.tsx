@@ -16,9 +16,11 @@ export default function ProfilePage({ accountInfo }: { accountInfo: SanitizedUse
 		<div className="app-wrapper">
 			<div className="phone-container">
 				<div className="profile-header">
-					<button className="back-button" onClick={() => navigate("/dashboard")}>
-						← Back
-					</button>
+					<div className="back-button-container">
+						<button className="back-button" onClick={() => navigate("/dashboard")}>
+							← Back
+						</button>
+					</div>
 					<h2 className="profile-title">Your Profile</h2>
 				</div>
 

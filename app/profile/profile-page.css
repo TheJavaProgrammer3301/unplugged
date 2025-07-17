@@ -10,16 +10,21 @@
   margin: 0;
 }
 
+.back-button-container {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(255, 65, 108, 0.5);
+}
+
 .back-button {
-  background: #ff4e50;
-  color: white;
+  background: transparent;
   border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 8px;
-  cursor: pointer;
+  color: white;
   font-weight: bold;
-  font-size: 0.9rem;
-  transition: background 0.3s ease;
+  font-size: 1rem;
+  cursor: pointer;
 }
 
 .back-button:hover {
