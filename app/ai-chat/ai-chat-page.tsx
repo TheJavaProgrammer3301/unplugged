@@ -1,8 +1,17 @@
 import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { MDXRenderer } from "~/mdx-renderer";
 import "./ai-chat-page.css";
 import therynLogo from "./theryn.png"; // Make sure this path is correct
+
+function ChatMessage({ message }: { message: ChatCompletionMessageParam }) {
+	return <div
+		className={`chat-bubble ${message.role === "user" ? "user" : "assistant"}`}
+	>
+		{<MDXRenderer source={message.content?.toString() ?? ""} />}
+	</div>
+}
 
 export default function AIChatPage({ conversation, chatId }: { conversation?: ChatCompletionMessageParam[]; chatId?: string | null }) {
 	const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
@@ -46,7 +55,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 			}
 
 			const data = await response.json() as { conversationId: string; conversation: ChatCompletionMessageParam[] };
-			
+
 			navigate(`/ai-chat/${data.conversationId}`, { replace: true });
 		} else {
 			const response = await fetch(`/api/conversations/${chatId}/messages`, {
@@ -82,14 +91,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 				</div>
 
 				<div className="chat-messages">
-					{messages.map((msg, idx) => (
-						<div
-							key={idx}
-							className={`chat-bubble ${msg.role === "user" ? "user" : "assistant"}`}
-						>
-							{msg.content?.toString()}
-						</div>
-					))}
+					{messages.map((msg, idx) => <ChatMessage key={idx} message={msg} />)}
 				</div>
 
 				<form className="chat-input-form" onSubmit={handleSend}>
