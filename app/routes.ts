@@ -8,5 +8,6 @@ export default [
   route("/journal", "routes/journal.tsx"),
   route("/ai-chat/:chatId?", "routes/ai-chat.tsx"),
   route("/saved-chats", "routes/saved-chats.tsx"),
+  route("/profile", "routes/profile.tsx"),
   route("/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;
