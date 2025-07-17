@@ -16,13 +16,11 @@ export async function tryLogIn(email: string, password: string) {
 		body: JSON.stringify({ email, password })
 	});
 
+	const body = await response.text();
+
 	if (response.ok) {
-		const data = await response.json() as any;
+		const data = JSON.parse(body) as any;
 
 		document.cookie = `${SESSION_COOKIE_NAME}=${data.session as string}; Path=/;`;
-		
-		return true;
-	}
-
-	return false;
+	} else throw body ?? response.statusText
 }

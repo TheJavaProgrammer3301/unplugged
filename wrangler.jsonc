@@ -17,7 +17,8 @@
 		{
 			"binding": "DB",
 			"database_name": "unplugged-dev",
-			"database_id": "e7f825f7-36fb-4ac8-95bf-30e58e688d10"
+			"database_id": "e7f825f7-36fb-4ac8-95bf-30e58e688d10",
+			"experimental_remote": true
 		}
 	],
 	/**
