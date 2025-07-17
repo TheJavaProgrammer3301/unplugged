@@ -13,13 +13,22 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 	if (!accountInfo) return <></>;
 
 	const [showPopup, setShowPopup] = useState(false);
+	const [showDotsDropdown, setShowDotsDropdown] = useState(false);
 	const containerRef = useRef<HTMLDivElement>(null);
+	const dotDropdownRef = useRef<HTMLDivElement>(null);
 
-	// Close popup on outside click
+	// Close popups on outside click
 	useEffect(() => {
 		function handleClickOutside(event: MouseEvent) {
-			if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+			if (
+				containerRef.current && !containerRef.current.contains(event.target as Node)
+			) {
 				setShowPopup(false);
+			}
+			if (
+				dotDropdownRef.current && !dotDropdownRef.current.contains(event.target as Node)
+			) {
+				setShowDotsDropdown(false);
 			}
 		}
 		document.addEventListener("mousedown", handleClickOutside);
@@ -31,21 +40,29 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 			<div className="phone-container">
 				{/* Top Bar */}
 				<div className="top-bar">
-					<div className="dot-group">
-						<div className="dot"></div>
-						<div className="dot"></div>
-						<div className="dot"></div>
+					<div className="dot-dropdown-wrapper" ref={dotDropdownRef}>
+						<button className="dot-group" onClick={() => setShowDotsDropdown(v => !v)}>
+							<div className="dot"></div>
+							<div className="dot"></div>
+							<div className="dot"></div>
+						</button>
+						{showDotsDropdown && (
+							<div className="dots-dropdown">
+								<button onClick={() => navigate("/profile")}>Profile</button>
+								<button onClick={() => navigate("/saved-quotes")}>Saved Quotes</button>
+								<button onClick={() => navigate("/badges")}>Badges</button>
+							</div>
+						)}
 					</div>
+
 					<div className="stats">
 						<div className="stat-box">💰 {accountInfo.coins} 💎 {accountInfo.diamonds}</div>
 						<div className="stat-box">🔥 {accountInfo.streak}</div>
 					</div>
 				</div>
 
-				{/* Greeting */}
 				<h1 className="greeting">Hello, {accountInfo.name}</h1>
 
-				{/* Feature Buttons */}
 				<div className="button-grid">
 					<button className="feature-button" onClick={() => navigate("/quote-bank")}>Quote Bank</button>
 					<button className="feature-button" onClick={() => navigate("/journal")}>Journal</button>
@@ -53,18 +70,10 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 					<button className="feature-button">Mind Bank</button>
 				</div>
 
-				{/* AI Therapy Button with Popup at Bottom */}
 				<div ref={containerRef} style={{ position: "relative", marginTop: "auto" }}>
-					<button
-						className="ai-therapy"
-						type="button"
-						onClick={() => setShowPopup((v) => !v)}
-					>
+					<button className="ai-therapy" type="button" onClick={() => setShowPopup((v) => !v)}>
 						<span>AI Therapy</span>
-						<img
-							src="app/welcome/theryn-ai-logo.png"
-							alt="Theryn AI Logo"
-						/>
+						<img src="app/welcome/theryn-ai-logo.png" alt="Theryn AI Logo" />
 					</button>
 
 					{showPopup && (

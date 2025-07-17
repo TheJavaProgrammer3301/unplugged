@@ -7,11 +7,6 @@
   margin-bottom: 1rem;
 }
 
-.dot-group {
-  display: flex;
-  gap: 0.25rem;
-}
-
 .dot {
   width: 12px;
   height: 12px;
@@ -164,6 +159,60 @@
   transform: scale(1.05);
 }
 
+.dot-dropdown-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.dot-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.4rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: background 0.2s ease;
+}
+
+.dot-group:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.dots-dropdown {
+  position: absolute;
+  top: 130%;
+  left: 0;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #1f1a3d, #4b2b6a);
+  border-radius: 1rem;
+  box-shadow: 0 8px 20px rgba(75, 0, 130, 0.7);
+  min-width: 140px;
+}
+
+.dots-dropdown button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #e0f7ff;
+  font-weight: 600;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dots-dropdown button:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  transform: scale(1.05);
+}
 
 
 
