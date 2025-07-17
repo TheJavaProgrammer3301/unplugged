@@ -1,0 +1,64 @@
+.journal-container {
+  overflow-y: auto;
+  padding: 1rem;
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.journal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.journal-back {
+  background: linear-gradient(135deg, #ff5f6d, #ffc371);
+  border: none;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.journal-header h1 {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.journal-section label {
+  display: block;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.journal-section textarea {
+  width: 100%;
+  resize: none;
+  border: none;
+  padding: 0.6rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #e0e0e0;
+  font-size: 0.85rem;
+  font-family: inherit;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.journal-save {
+  background: linear-gradient(to right, #00c9ff, #92fe9d);
+  border: none;
+  padding: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #1a1a1a;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: auto;
+}

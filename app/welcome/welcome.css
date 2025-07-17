@@ -1,35 +1,5 @@
 /* index.css */
 
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #e0e0e0;
-}
-
-.app-wrapper {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1rem;
-}
-
-.phone-container {
-  width: 336px;
-  height: 632px;
-  background: linear-gradient(145deg, #1a1a40, #4b0082, #6a00ff);
-  border-radius: 1.5rem;
-  box-shadow: 0 8px 40px rgba(106, 0, 255, 0.7);
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  color: #dcd6f7;
-}
-
 
 .top-bar {
   display: flex;

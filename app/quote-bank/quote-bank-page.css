@@ -1,0 +1,72 @@
+.quote-bank-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.back-button-container {
+  background: linear-gradient(135deg, #ff416c, #ff4b2b);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  width: fit-content;
+  box-shadow: 0 4px 14px rgba(255, 65, 108, 0.5);
+}
+
+.back-button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.sort-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+  gap: 0.5rem;
+}
+
+.sort-controls select {
+  flex: 1;
+  padding: 0.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+
+.quote-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+    max-height: 400px; /* or whatever height fits your design */
+  overflow-y: auto;
+  padding-right: 8px; /* optional, for scrollbar spacing */
+}
+
+.quote-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-left: 4px solid #6a00ff;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+}
+
+.quote-card.motivation {
+  border-left-color: #ff4b4b; /* red */
+}
+
+.quote-card.loss {
+  border-left-color: #000000; /* black */
+}
+
+.quote-card.acceptance {
+  border-left-color: #2ecc71; /* green */
+}
+
+.quote-card.loneliness {
+  border-left-color: #3498db; /* blue */
+}

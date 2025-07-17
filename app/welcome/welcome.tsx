@@ -47,8 +47,8 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 
 				{/* Feature Buttons */}
 				<div className="button-grid">
-					<button className="feature-button">Quote Bank</button>
-					<button className="feature-button">Journal</button>
+					<button className="feature-button" onClick={() => navigate("/quote-bank")}>Quote Bank</button>
+					<button className="feature-button" onClick={() => navigate("/journal")}>Journal</button>
 					<button className="feature-button">Daily Routine</button>
 					<button className="feature-button">Mind Bank</button>
 				</div>
