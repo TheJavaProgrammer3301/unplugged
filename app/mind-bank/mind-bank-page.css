@@ -18,23 +18,6 @@
   color: #f2f2f2;
 }
 
-.back-button-container {
-  background: linear-gradient(135deg, #ff416c, #ff4b2b);
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  width: fit-content;
-  box-shadow: 0 4px 14px rgba(255, 65, 108, 0.5);
-}
-
-.back-button {
-  background: transparent;
-  border: none;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
 .wheel-wrapper {
   position: relative;
   width: 180px;

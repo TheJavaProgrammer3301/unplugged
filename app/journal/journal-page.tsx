@@ -24,7 +24,7 @@ export default function JournalPage() {
     <div className="app-wrapper">
       <div className="phone-container journal-container">
         <div className="journal-header">
-          <button className="journal-back" onClick={() => navigate("/dashboard")}>
+          <button className="back-button" onClick={() => navigate("/dashboard")}>
             ← Back
           </button>
           <h1>My Journal</h1>

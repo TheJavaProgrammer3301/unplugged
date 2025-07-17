@@ -11,7 +11,7 @@ export default function NotFoundPage() {
           🤔
         </div>
         <button
-          className="back-home-button"
+          className="back-button"
           onClick={() => {
             window.location.href = "/";
           }}

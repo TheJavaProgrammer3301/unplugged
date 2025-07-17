@@ -47,3 +47,19 @@ body {
              calc(env(safe-area-inset-bottom, 1rem) + 1rem);
   }
 }
+
+.back-button {
+  background: #ff4d4f;
+  border: none;
+  color: white;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 77, 79, 0.5);
+  transition: background 0.2s ease;
+}
+
+.back-button:hover {
+  background: #e04344;
+}
