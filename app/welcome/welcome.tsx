@@ -69,7 +69,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 
 					{showPopup && (
 						<div className="ai-popup">
-							<button onClick={() => alert("Start New Chat!")}>New Chat</button>
+							<button onClick={() => navigate("/ai-chat")}>New Chat</button>
 							<button onClick={() => alert("Open Saved Chats!")}>Saved Chats</button>
 						</div>
 					)}
