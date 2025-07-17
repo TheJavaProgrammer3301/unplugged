@@ -1,6 +1,5 @@
-import React from "react";
-import "./profile-page.css";
 import { useNavigate } from "react-router";
+import "./profile-page.css";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -17,7 +16,7 @@ export default function ProfilePage() {
     <div className="app-wrapper">
       <div className="phone-container">
         <div className="profile-header">
-          <button className="back-button" onClick={() => navigate("/")}>
+          <button className="back-button" onClick={() => navigate("/dashboard")}>
             ← Back
           </button>
           <h2 className="profile-title">Your Profile</h2>

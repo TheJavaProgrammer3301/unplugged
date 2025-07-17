@@ -435,7 +435,7 @@ export default function QuoteBankPage() {
       <div className="phone-container">
         <div className="quote-bank-header">
           <div className="back-button-container">
-            <button className="back-button" onClick={() => navigate("/")}>
+            <button className="back-button" onClick={() => navigate("/dashboard")}>
               ← Back
             </button>
           </div>
