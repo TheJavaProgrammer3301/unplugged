@@ -6,7 +6,7 @@ export default [
   route("/login", "routes/login.tsx"),
   route("/quote-bank", "routes/quote-bank.tsx"),
   route("/journal", "routes/journal.tsx"),
-  route("/ai-chat", "routes/ai-chat.tsx"),
+  route("/ai-chat/:chatId?", "routes/ai-chat.tsx"),
   route("/saved-chats", "routes/saved-chats.tsx"),
   route("/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

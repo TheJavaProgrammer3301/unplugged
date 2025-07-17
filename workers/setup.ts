@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { createAccount, createAccountAndLogIn, createConversation, logIn, sendMessageToConversation } from "./write-api";
+import { addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, logIn, sendMessageToConversation } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -37,7 +37,7 @@ router.post(`${BACKEND_PREFIX}/create-session`, async (request) => {
 	return logIn(request.env, body.email, body.password);
 });
 
-router.post(`${BACKEND_PREFIX}/create-conversation`, async (request) => {
+router.post(`${BACKEND_PREFIX}/conversation`, async (request) => {
 	const body = await request.req.json() as any;
 
 	const sessionId = getSessionIdFromRequest(request.req.raw);
@@ -50,9 +50,25 @@ router.post(`${BACKEND_PREFIX}/create-conversation`, async (request) => {
 	}
 
 	const convoId = await createConversation(request.env, userId);
-	const response = await sendMessageToConversation(request.env, convoId, body.startMessage);
+	const conversation = await addMessageToConversation(request.env, [], convoId, body.startMessage);
 
-	return response;
+	return Response.json({ conversationId: convoId, conversation }, { status: 201 });
+});
+
+router.post(`${BACKEND_PREFIX}/conversations/:conversationId/messages`, async (request) => {
+	const { conversationId } = request.req.params as { conversationId: string };
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.message) {
+		return new Response("Missing message", { status: 400 });
+	}
+
+	return await sendMessageToConversation(request.env, conversationId, body.message);
 });
 
 export const MAIN_ROUTER = router;

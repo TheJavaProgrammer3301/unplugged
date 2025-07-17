@@ -1,73 +1,108 @@
-import React, { useState } from "react";
+import type { ChatCompletionMessageParam } from "openai/resources";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import "./ai-chat-page.css";
 import therynLogo from "./theryn.png"; // Make sure this path is correct
 
-type Message = {
-  role: "user" | "assistant";
-  text: string;
-};
+export default function AIChatPage({ conversation, chatId }: { conversation?: ChatCompletionMessageParam[]; chatId?: string | null }) {
+	const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
+	const [input, setInput] = useState("");
+	const navigate = useNavigate();
 
-export default function AIChatPage() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const navigate = useNavigate();
+	useEffect(() => {
+		setMessages(conversation ?? []);
+	}, [conversation]);
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+	const hasBadConversationReference = chatId && !conversation;
 
-    const newMessages: Message[] = [...messages, { role: "user" as "user", text: input }];
-    setMessages(newMessages);
-    setInput("");
+	useEffect(() => {
+		if (hasBadConversationReference) navigate("/ai-chat", { replace: true });
+	}, [hasBadConversationReference]);
 
-    // Simulate AI response
-    setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: "I'm Theryn! How can I help you today?",
-        },
-      ]);
-    }, 600);
-  };
+	if (hasBadConversationReference) return <></>;
 
-  return (
-    <div className="app-wrapper">
-      <div className="phone-container">
-        <div className="ai-chat-header">
-          <button className="back-button" onClick={() => navigate("/")}>
-            ← Back
-          </button>
-          <div className="theryn-label">
-            <img src={therynLogo} alt="Theryn Logo" className="theryn-logo" />
-            <h1>Theryn</h1>
-          </div>
-        </div>
+	const handleSend = async (e: React.FormEvent) => {
+		e.preventDefault();
+		if (!input.trim()) return;
 
-        <div className="chat-messages">
-          {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`chat-bubble ${msg.role === "user" ? "user" : "assistant"}`}
-            >
-              {msg.text}
-            </div>
-          ))}
-        </div>
+		const userMessage: ChatCompletionMessageParam = { role: "user", content: input.trim() };
 
-        <form className="chat-input-form" onSubmit={handleSend}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Send a message..."
-            className="chat-input"
-          />
-          <button type="submit" className="send-button">→</button>
-        </form>
-      </div>
-    </div>
-  );
+		setMessages((prev) => [...prev, userMessage]);
+		setInput("");
+
+		if (!chatId) {
+			// make new convo
+			const response = await fetch("/api/conversation", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ startMessage: input.trim() })
+			});
+
+			if (!response.ok) {
+				console.error("Failed to create conversation");
+				return;
+			}
+
+			const data = await response.json() as { conversationId: string; conversation: ChatCompletionMessageParam[] };
+			
+			navigate(`/ai-chat/${data.conversationId}`, { replace: true });
+		} else {
+			const response = await fetch(`/api/conversations/${chatId}/messages`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({ message: input.trim() })
+			});
+
+			if (!response.ok) {
+				console.error("Failed to send message");
+				return;
+			}
+
+			const data = await response.json() as ChatCompletionMessageParam[];
+
+			setMessages(data);
+		}
+	};
+
+	return (
+		<div className="app-wrapper">
+			<div className="phone-container">
+				<div className="ai-chat-header">
+					<button className="back-button" onClick={() => navigate("/dashboard")}>
+						← Back
+					</button>
+					<div className="theryn-label">
+						<img src={therynLogo} alt="Theryn Logo" className="theryn-logo" />
+						<h1>Theryn</h1>
+					</div>
+				</div>
+
+				<div className="chat-messages">
+					{messages.map((msg, idx) => (
+						<div
+							key={idx}
+							className={`chat-bubble ${msg.role === "user" ? "user" : "assistant"}`}
+						>
+							{msg.content?.toString()}
+						</div>
+					))}
+				</div>
+
+				<form className="chat-input-form" onSubmit={handleSend}>
+					<input
+						type="text"
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
+						placeholder="Send a message..."
+						className="chat-input"
+					/>
+					<button type="submit" className="send-button">→</button>
+				</form>
+			</div>
+		</div>
+	);
 }

@@ -2,7 +2,7 @@ import * as EmailValidator from 'email-validator';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 
-async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string) {
+export async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string) {
 	const newMessages: ChatCompletionMessageParam[] = [{ role: "user", content: input }];
 
 	const client = new OpenAI({
