@@ -66,7 +66,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 				<div className="button-grid">
 					<button className="feature-button" onClick={() => navigate("/quote-bank")}>Quote Bank</button>
 					<button className="feature-button" onClick={() => navigate("/journal")}>Journal</button>
-					<button className="feature-button">Daily Routine</button>
+					<button className="feature-button" onClick={() => navigate("/daily-routine")}>Daily Routine</button>
 					<button className="feature-button" onClick={() => navigate("/mind-bank")}>Mind Bank</button>
 				</div>
 
