@@ -49,9 +49,10 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 						</button>
 						{showDotsDropdown && (
 							<div className="dots-dropdown">
-								<button onClick={() => navigate("/profile")}>Profile</button>
-								<button onClick={() => navigate("/saved-quotes")}>Saved Quotes</button>
-								<button onClick={() => navigate("/badges")}>Badges</button>
+								<button onClick={() => navigate("/profile")} className="dropdown-button">Profile</button>
+								<button onClick={() => navigate("/saved-quotes")} className="dropdown-button">Saved Quotes</button>
+								<button onClick={() => navigate("/badges")} className="dropdown-button">Badges</button>
+								<button onClick={() => navigate("/weekly-summary")} className="summary-button">Weekly Summary</button>
 							</div>
 						)}
 					</div>

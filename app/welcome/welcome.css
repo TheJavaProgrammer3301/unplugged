@@ -195,7 +195,7 @@
   min-width: 140px;
 }
 
-.dots-dropdown button {
+.dropdown-button {
   background: linear-gradient(135deg, #00c6ff, #0072ff);
   color: #e0f7ff;
   font-weight: 600;
@@ -209,11 +209,26 @@
   letter-spacing: 0.03em;
 }
 
-.dots-dropdown button:hover {
+.dropdown-button:hover {
   background: linear-gradient(135deg, #0072ff, #00c6ff);
   transform: scale(1.05);
 }
 
+.summary-button {
+  background: linear-gradient(145deg, #1a1a40, #4b0082, #6a00ff);
+  color: #e0f7ff;
+  font-weight: 600;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
 
-
-
+.summary-button:hover {
+  background: linear-gradient(145deg, #06050d, #2c003b, #4a0080);
+  transform: scale(1.05);
+}
