@@ -1,4 +1,4 @@
-.ai-chat-header {
+/* .ai-chat-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -82,4 +82,16 @@
 
 .send-button:hover {
   background: #5800cc;
+} */
+.chat-message {
+	white-space: normal;
+	/* allows wrapping */
+	word-break: break-word;
+	/* breaks long words */
+	overflow-wrap: break-word;
+	/* ensures long words wrap in all browsers */
+}
+
+.MuiCircularProgress-track { 
+	stroke: var(--joy-palette-neutral-softBg) !important;
 }
