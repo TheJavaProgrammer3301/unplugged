@@ -170,6 +170,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 					<Button
 						color='danger'
 						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+						onClick={() => navigate("/dashboard", { replace: true })}
 					>
 						<ArrowBack />
 						<Typography sx={{ color: "white" }}>Back</Typography>
@@ -179,7 +180,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>Theryn</Typography>
 				</Box>
 				<Divider />
-				<List sx={{ padding: 0, flexGrow: "1", gap: `${INSET / 2}px` }}>
+				<List sx={{ padding: 0, flexGrow: "1", gap: `${INSET / 2}px`, overflowY: "auto", scrollbarGutter: "stable", scrollBehavior: "smooth" }}>
 					{messages.map((msg, idx) =>
 						<ChatMessage message={msg} key={idx} />
 					)}
@@ -221,33 +222,5 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 				</Box>
 			</Sheet>
 		</CssVarsProvider>
-		// <div className="app-wrapper">
-		// 	<div className="phone-container">
-		// 		<div className="ai-chat-header">
-		// 			<button className="back-button" onClick={() => navigate("/dashboard")}>
-		// 				← Back
-		// 			</button>
-		// 			<div className="theryn-label">
-		// 				<img src={therynLogo} alt="Theryn Logo" className="theryn-logo" />
-		// 				<h1>Theryn</h1>
-		// 			</div>
-		// 		</div>
-
-		// 		<div className="chat-messages">
-		// 			{messages.map((msg, idx) => <ChatMessage key={idx} message={msg} />)}
-		// 		</div>
-
-		// 		<form className="chat-input-form" onSubmit={handleSend}>
-		// 			<input
-		// 				type="text"
-		// 				value={input}
-		// 				onChange={(e) => setInput(e.target.value)}
-		// 				placeholder="Send a message..."
-		// 				className="chat-input"
-		// 			/>
-		// 			<button type="submit" className="send-button">→</button>
-		// 		</form>
-		// 	</div>
-		// </div>
 	);
 }

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import "~/index.scss";
 import "./mind-bank-page.css";
 
 const challenges = [

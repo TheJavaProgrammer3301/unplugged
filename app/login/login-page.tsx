@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import "~/index.scss";
 import { tryLogIn } from "~/local-data/session";
 import "./login-page.css";
 

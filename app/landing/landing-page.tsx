@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router";
 import type { SanitizedUserData } from "workers/read-api";
+import "~/index.scss";
 import "./landing-page.css";
 
 export default function LandingPage({ accountInfo }: { accountInfo: SanitizedUserData | null }) {

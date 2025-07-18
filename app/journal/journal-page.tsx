@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
+import "~/index.scss";
 import "./journal-page.css";
 
 export default function JournalPage() {
