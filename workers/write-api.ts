@@ -13,6 +13,7 @@ export async function addMessageToConversation(env: Env, conversation: ChatCompl
 	const response = await client.chat.completions.create({
 		model: "gpt-4o",
 		messages: [
+			{ role: "system", content: env.THERYN_PROMPT },
 			...conversation,
 			...newMessages
 		]
@@ -151,7 +152,7 @@ export async function sendMessageToConversation(env: Env, conversationId: string
 	try {
 		const conversation = JSON.parse(result.content as string) as ChatCompletionMessageParam[];
 		const finalConversation = await addMessageToConversation(env, conversation, conversationId, input);
-	
+
 		return Response.json(finalConversation);
 	} catch (e) {
 		console.warn(e);

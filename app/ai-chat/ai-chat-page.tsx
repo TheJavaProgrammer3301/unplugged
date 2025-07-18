@@ -82,10 +82,44 @@ const theme = extendTheme({
 
 function ChatMessage({ message }: { message: ChatCompletionMessageParam }) {
 	const set = message.role === "user" ? colorsets.user : colorsets.assistant;
+	const messageContent = message.content?.toString() ?? "";
+	
+	// Function to play a notification sound
+	const playNotificationSound = () => {
+		// Try to play audio file first
+		const audio = new Audio("/notification.mp3");
+		audio.play().catch(() => {
+			// Fallback: create a simple beep using Web Audio API
+			try {
+				const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+				const oscillator = audioContext.createOscillator();
+				const gainNode = audioContext.createGain();
+				
+				oscillator.connect(gainNode);
+				gainNode.connect(audioContext.destination);
+				
+				oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+				gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+				gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+				
+				oscillator.start(audioContext.currentTime);
+				oscillator.stop(audioContext.currentTime + 0.3);
+			} catch (error) {
+				console.warn("Could not play notification sound:", error);
+			}
+		});
+	};
+	
+	// Check if this is an AI message containing !playSound
+	useEffect(() => {
+		if (message.role === "assistant" && messageContent.includes("!playSound")) {
+			playNotificationSound();
+		}
+	}, [message.role, messageContent]);
 
 	return <ListItem className="chat-message" sx={{ padding: '0', marginLeft: set.leftInset, marginRight: set.rightInset, display: "flex", flexDirection: "column", alignItems: message.role === "user" ? "flex-end" : "flex-start", gap: 1 }} >
 		<Card sx={{ borderRadius: "16px", backgroundColor: set.background, borderColor: set.border }} variant="outlined">
-			<Markdown>{message.content?.toString() ?? ""}</Markdown>
+			<Markdown>{messageContent}</Markdown>
 		</Card>
 	</ListItem >;
 }
@@ -165,7 +199,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 	return (
 		<CssVarsProvider theme={theme}>
-			<Sheet sx={{ height: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", background: colors.primaryBackground, padding: `${INSET}px`, gap: `${INSET / 2}px` }}>
+			<Sheet id="root" sx={{ height: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", background: colors.primaryBackground, padding: `${INSET}px`, gap: `${INSET / 2}px` }}>
 				<Box sx={{ all: 'unset', display: "flex", gap: "16px" }}>
 					<Button
 						color='danger'
