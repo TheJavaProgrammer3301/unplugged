@@ -1,23 +1,34 @@
-import Send from '@mui/icons-material/Send';
-import { Box, Button, Card, CircularProgress, List, ListItem, Sheet, Textarea } from "@mui/joy";
+import { ArrowBack, Send } from '@mui/icons-material';
+import { Avatar, Box, Button, Card, CircularProgress, Divider, List, ListItem, Sheet, Textarea, Typography } from "@mui/joy";
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
 import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { useNavigate } from "react-router";
+import "~/mui.scss";
 import "./ai-chat-page.css";
+import therynLogo from "./theryn.png";
 
 const INSET = 32;
-const OFFSET = 0.132;
+
+// const colors = {
+// 	//rgb(32, 116, 223)
+// 	primaryBackground: "rgb(0, 17, 44)",
+// 	userChatBackground: "rgb(24, 87, 168)",
+// 	userChatBorder: "rgb(44, 107, 188)",
+// 	assistantChatBackground: "rgb(30, 30, 30)",
+// 	assistantChatBorder: "rgb(50, 50, 50)",
+// }
 
 const colors = {
 	//rgb(32, 116, 223)
-	primaryBackground: "rgb(0, 17, 44)",
-	userChatBackground: "rgb(24, 87, 168)",
-	userChatBorder: "rgb(44, 107, 188)",
-	assistantChatBackground: "rgb(30, 30, 30)",
-	assistantChatBorder: "rgb(50, 50, 50)",
+	primaryBackground: "linear-gradient(145deg,#1a1a40,indigo,#6a00ff)",
+	userChatBackground: "rgb(106, 0, 255)",
+	userChatBorder: "rgb(126, 20, 255)",
+	assistantChatBackground: "rgba(255, 255, 255, 0.1)",
+	assistantChatBorder: "rgba(255, 255, 255, 0.2)",
 }
+
 // const colors = {
 // 	primaryBackground: "rgb(20, 20, 20)",
 // 	userChatBackground: "rgb(75, 75, 75)",
@@ -55,7 +66,10 @@ const theme = extendTheme({
 					softBg: colors.assistantChatBackground
 				},
 				primary: {
-					solidBg: colors.assistantChatBorder
+					solidBg: colors.assistantChatBorder,
+					solidDisabledBg: colors.assistantChatBackground,
+					outlinedColor: "rgb(255, 255, 255)",
+					outlinedBorder: colors.assistantChatBorder,
 				}
 			},
 		},
@@ -149,49 +163,62 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 		}
 	};
 
-	console.log(isLoading);
-
 	return (
 		<CssVarsProvider theme={theme}>
-			<Sheet sx={{ background: colors.primaryBackground }}>
-				<List sx={{ gap: `${INSET / 2}px`, padding: `${INSET}px` }}>
+			<Sheet sx={{ height: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", background: colors.primaryBackground, padding: `${INSET}px`, gap: `${INSET / 2}px` }}>
+				<Box sx={{ all: 'unset', display: "flex", gap: "16px" }}>
+					<Button
+						color='danger'
+						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+					>
+						<ArrowBack />
+						<Typography sx={{ color: "white" }}>Back</Typography>
+					</Button>
+					<Box sx={{ flexGrow: 1 }} />
+					<Avatar src={therynLogo} />
+					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>Theryn</Typography>
+				</Box>
+				<Divider />
+				<List sx={{ padding: 0, flexGrow: "1", gap: `${INSET / 2}px` }}>
 					{messages.map((msg, idx) =>
 						<ChatMessage message={msg} key={idx} />
 					)}
-					{isLoading && <CircularProgress />}
-					<Box sx={{ all: 'unset', display: "flex", gap: "16px" }}>
-						<Textarea
-							variant="outlined"
-							minRows={1}
-							sx={{
-								flexGrow: "1",
-								padding: "12px 0 12px 20px",
-								borderRadius: "25px",
-								backgroundColor: colors.assistantChatBackground,
-								border: `1px solid ${colors.assistantChatBorder}`,
-								color: "white", fontSize: "16px"
-							}}
-							maxRows={6}
-							placeholder="Send a message..."
-							value={input}
-							onChange={(e) => setInput(e.target.value)}
-							onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { handleSend(e); } }}
-							disabled={chatId === undefined && messages.length > 0}
-							spellCheck={false}
-							autoFocus={true}
-						/>
-						<Button
-							sx={{
-								borderRadius: "25px",
-								backgroundColor: colors.assistantChatBackground,
-								border: `1px solid ${colors.assistantChatBorder}`,
-								width: "50px",
-								height: "50px"
-							}}
-							onClick={handleSend}
-						><Send /></Button>
-					</Box>
+					{isLoading && <CircularProgress variant='outlined' />}
 				</List>
+				<Divider />
+				<Box sx={{ all: 'unset', display: "flex", gap: "16px" }}>
+					<Textarea
+						variant="outlined"
+						minRows={1}
+						sx={{
+							flexGrow: "1",
+							padding: "12px 0 12px 20px",
+							borderRadius: "25px",
+							backgroundColor: colors.assistantChatBackground,
+							border: `1px solid ${colors.assistantChatBorder}`,
+							color: "white", fontSize: "16px"
+						}}
+						maxRows={6}
+						placeholder="Send a message..."
+						value={input}
+						onChange={(e) => setInput(e.target.value)}
+						onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { handleSend(e); } }}
+						disabled={isLoading}
+						spellCheck={false}
+						autoFocus={true}
+					/>
+					<Button
+						sx={{
+							borderRadius: "25px",
+							backgroundColor: colors.assistantChatBackground,
+							border: `1px solid ${colors.assistantChatBorder}`,
+							width: "50px",
+							height: "50px"
+						}}
+						disabled={isLoading || !input.trim()}
+						onClick={handleSend}
+					><Send /></Button>
+				</Box>
 			</Sheet>
 		</CssVarsProvider>
 		// <div className="app-wrapper">

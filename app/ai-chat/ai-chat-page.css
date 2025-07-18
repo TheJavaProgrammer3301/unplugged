@@ -91,3 +91,7 @@
 	overflow-wrap: break-word;
 	/* ensures long words wrap in all browsers */
 }
+
+.MuiCircularProgress-track { 
+	stroke: var(--joy-palette-neutral-softBg) !important;
+}
