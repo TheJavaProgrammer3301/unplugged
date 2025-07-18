@@ -15,5 +15,7 @@ export default [
   route("/daily-routine", "routes/daily-routine.tsx"),
   route("/weekly-summary", "routes/weekly-summary.tsx"),
   route("/streak", "routes/streak.tsx"),
+  route("/shop", "routes/shop.tsx"),
+  route("/signup", "routes/signup.tsx"),
   route("/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;
