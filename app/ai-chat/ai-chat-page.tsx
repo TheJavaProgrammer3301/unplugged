@@ -1,4 +1,5 @@
-import { Card, CircularProgress, List, ListItem, Sheet, Textarea } from "@mui/joy";
+import Send from '@mui/icons-material/Send';
+import { Box, Button, Card, CircularProgress, List, ListItem, Sheet, Textarea } from "@mui/joy";
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles';
 import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
@@ -158,8 +159,38 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 						<ChatMessage message={msg} key={idx} />
 					)}
 					{isLoading && <CircularProgress />}
-					<Textarea variant="outlined" minRows={1} sx={{ padding: "12px 0 12px 12px", borderRadius: "16px", backgroundColor: colors.assistantChatBackground, border: `1px solid ${colors.assistantChatBorder}`, color: "white", fontSize: "16px" }} maxRows={6} placeholder="Send a message..." value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { handleSend(e); } }} disabled={chatId === undefined && messages.length > 0} spellCheck={false} autoFocus={true}>
-					</Textarea>
+					<Box sx={{ all: 'unset', display: "flex", gap: "16px" }}>
+						<Textarea
+							variant="outlined"
+							minRows={1}
+							sx={{
+								flexGrow: "1",
+								padding: "12px 0 12px 20px",
+								borderRadius: "25px",
+								backgroundColor: colors.assistantChatBackground,
+								border: `1px solid ${colors.assistantChatBorder}`,
+								color: "white", fontSize: "16px"
+							}}
+							maxRows={6}
+							placeholder="Send a message..."
+							value={input}
+							onChange={(e) => setInput(e.target.value)}
+							onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { handleSend(e); } }}
+							disabled={chatId === undefined && messages.length > 0}
+							spellCheck={false}
+							autoFocus={true}
+						/>
+						<Button
+							sx={{
+								borderRadius: "25px",
+								backgroundColor: colors.assistantChatBackground,
+								border: `1px solid ${colors.assistantChatBorder}`,
+								width: "50px",
+								height: "50px"
+							}}
+							onClick={handleSend}
+						><Send /></Button>
+					</Box>
 				</List>
 			</Sheet>
 		</CssVarsProvider>
