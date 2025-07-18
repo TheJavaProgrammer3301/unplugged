@@ -79,7 +79,7 @@ const theme = extendTheme({
 // Then, pass it to `<CssVarsProvider theme={theme}>`.
 
 // Sound command configuration
-const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend', 'uplifting'] as const;
+const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend', 'uplifting', 'happy'] as const;
 type SoundCommand = typeof SOUND_COMMANDS[number];
 
 // Shared audio context and current playing state
