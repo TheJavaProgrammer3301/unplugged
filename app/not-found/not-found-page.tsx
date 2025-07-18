@@ -1,4 +1,4 @@
-import React from "react";
+import "~/index.scss";
 import "./not-found-page.css";
 
 export default function NotFoundPage() {

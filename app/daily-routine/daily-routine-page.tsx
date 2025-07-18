@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import "~/index.scss";
 import "./daily-routine-page.css";
 
 interface Task {

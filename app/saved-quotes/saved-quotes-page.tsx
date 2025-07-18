@@ -1,4 +1,4 @@
-import React from "react";
+import "~/index.scss";
 import "./saved-quotes-page.css";
 
 interface Quote {

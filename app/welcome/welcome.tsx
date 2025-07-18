@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import type { SanitizedUserData } from "workers/read-api";
+import "~/index.scss";
 import "./welcome.css";
 
 export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {

@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import "~/index.scss";
 import "./saved-chats-page.css";
 
 const mockChats = [
