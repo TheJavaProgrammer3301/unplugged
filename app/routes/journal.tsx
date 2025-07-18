@@ -23,6 +23,6 @@ export async function loader({ request, context, params }: Route.LoaderArgs) {
 	return { entry };
 }
 
-export default function Journal({ entry }: Route.ComponentProps) {
-	return <JournalPage entry={entry} />;
+export default function Journal({ loaderData }: Route.ComponentProps) {
+	return <JournalPage entry={loaderData.entry} />;
 }
