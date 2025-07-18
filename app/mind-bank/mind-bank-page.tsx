@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./mind-bank-page.css";
 
 const challenges = [
-  "No phone for 24 hours",
+  "No phone for 24 hours<br>Your streak will be saved",
   "Write in your journal",
   "Take a long walk",
   "Practice gratitude",

@@ -11,5 +11,6 @@ export default [
   route("/saved-quotes", "routes/saved-quotes.tsx"),
   route("/profile", "routes/profile.tsx"),
   route("/mind-bank", "routes/mind-bank.tsx"),
+  route("/badges", "routes/badges.tsx"),
   route("/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;
