@@ -78,48 +78,112 @@ const theme = extendTheme({
 
 // Then, pass it to `<CssVarsProvider theme={theme}>`.
 
+// Sound command configuration
+const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend'] as const;
+type SoundCommand = typeof SOUND_COMMANDS[number];
 
+// Shared audio context and current playing state
+let currentAudioContext: AudioContext | null = null;
+let currentOscillator: OscillatorNode | null = null;
+let currentAudio: HTMLAudioElement | null = null;
 
-function ChatMessage({ message }: { message: ChatCompletionMessageParam }) {
+function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessageParam; isNewMessage?: boolean }) {
 	const set = message.role === "user" ? colorsets.user : colorsets.assistant;
 	const messageContent = message.content?.toString() ?? "";
-	
-	// Function to play a notification sound
-	const playNotificationSound = () => {
-		// Try to play audio file first
-		const audio = new Audio("/notification.mp3");
-		audio.play().catch(() => {
-			// Fallback: create a simple beep using Web Audio API
+
+	// Function to play a specific sound (limited to one at a time)
+	const playSound = (soundName: SoundCommand) => {
+		currentAudio?.pause();
+
+		// Stop any currently playing sound
+		if (currentOscillator) {
 			try {
-				const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-				const oscillator = audioContext.createOscillator();
-				const gainNode = audioContext.createGain();
+				currentOscillator.stop();
+			} catch (e) {
+				// Oscillator might already be stopped
+			}
+			currentOscillator = null;
+		}
+		
+		// Try to play audio file first
+		currentAudio = new Audio(`/${soundName}.mp3`);
+		currentAudio.play().catch(() => {
+			// Fallback: create different sounds based on command
+			try {
+				if (!currentAudioContext) {
+					currentAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+				}
+				
+				const oscillator = currentAudioContext.createOscillator();
+				const gainNode = currentAudioContext.createGain();
 				
 				oscillator.connect(gainNode);
-				gainNode.connect(audioContext.destination);
+				gainNode.connect(currentAudioContext.destination);
 				
-				oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-				gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-				gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+				// Different frequencies for different sounds
+				const frequency = 600;
+				oscillator.frequency.setValueAtTime(frequency, currentAudioContext.currentTime);
+				gainNode.gain.setValueAtTime(0.1, currentAudioContext.currentTime);
+				gainNode.gain.exponentialRampToValueAtTime(0.01, currentAudioContext.currentTime + 0.3);
 				
-				oscillator.start(audioContext.currentTime);
-				oscillator.stop(audioContext.currentTime + 0.3);
+				oscillator.start(currentAudioContext.currentTime);
+				oscillator.stop(currentAudioContext.currentTime + 0.3);
+				
+				currentOscillator = oscillator;
+				
+				// Clear reference when sound ends
+				oscillator.onended = () => {
+					currentOscillator = null;
+				};
 			} catch (error) {
-				console.warn("Could not play notification sound:", error);
+				console.warn(`Could not play ${soundName} sound:`, error);
 			}
 		});
 	};
+
+	// Function to detect and extract sound commands from message
+	const detectSoundCommands = (content: string): SoundCommand[] => {
+		const foundCommands: SoundCommand[] = [];
+		
+		SOUND_COMMANDS.forEach(soundName => {
+			const pattern = new RegExp(`!playSound\\s+${soundName}`, 'gi');
+			if (pattern.test(content)) {
+				foundCommands.push(soundName);
+			}
+		});
+		
+		return foundCommands;
+	};
+
+	// Function to remove sound commands from message
+	const removeSoundCommands = (content: string): string => {
+		let cleanedContent = content;
+		
+		SOUND_COMMANDS.forEach(soundName => {
+			const pattern = new RegExp(`!playSound\\s+${soundName}`, 'gi');
+			cleanedContent = cleanedContent.replace(pattern, '`<used a command>`');
+		});
+		
+		return cleanedContent.trim();
+	};
 	
-	// Check if this is an AI message containing !playSound
+	// Check if this is a new AI message containing sound commands
 	useEffect(() => {
-		if (message.role === "assistant" && messageContent.includes("!playSound")) {
-			playNotificationSound();
+		if (isNewMessage && message.role === "assistant") {
+			const soundCommands = detectSoundCommands(messageContent);
+			// Play the first sound command found (to maintain one sound at a time)
+			if (soundCommands.length > 0) {
+				playSound(soundCommands[0]);
+			}
 		}
-	}, [message.role, messageContent]);
+	}, [isNewMessage, message.role, messageContent]);
+
+	// Remove sound commands from displayed message
+	const displayContent = message.role === "assistant" ? removeSoundCommands(messageContent) : messageContent;
 
 	return <ListItem className="chat-message" sx={{ padding: '0', marginLeft: set.leftInset, marginRight: set.rightInset, display: "flex", flexDirection: "column", alignItems: message.role === "user" ? "flex-end" : "flex-start", gap: 1 }} >
 		<Card sx={{ borderRadius: "16px", backgroundColor: set.background, borderColor: set.border }} variant="outlined">
-			<Markdown>{messageContent}</Markdown>
+			<Markdown>{displayContent}</Markdown>
 		</Card>
 	</ListItem >;
 }
@@ -128,10 +192,13 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 	const [messages, setMessages] = useState<ChatCompletionMessageParam[]>([]);
 	const [input, setInput] = useState("");
 	const [isLoading, setIsLoading] = useState(false);
+	const [previousMessageCount, setPreviousMessageCount] = useState(0);
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		setMessages(conversation ?? []);
+		const newMessages = conversation ?? [];
+		setMessages(newMessages);
+		setPreviousMessageCount(newMessages.length);
 	}, [conversation]);
 
 	const hasBadConversationReference = chatId && !conversation;
@@ -172,6 +239,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 			const data = await response.json() as { conversationId: string; conversation: ChatCompletionMessageParam[] };
 
+			setPreviousMessageCount(data.conversation.length);
 			navigate(`/ai-chat/${data.conversationId}`, { replace: true });
 		} else {
 			setIsLoading(true);
@@ -193,7 +261,9 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 			const data = await response.json() as ChatCompletionMessageParam[];
 
+			const newMessageCount = data.length;
 			setMessages(data);
+			setPreviousMessageCount(newMessageCount - 1);
 		}
 	};
 
@@ -216,7 +286,11 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 				<Divider />
 				<List sx={{ padding: 0, flexGrow: "1", gap: `${INSET / 2}px`, overflowY: "auto", scrollbarGutter: "stable", scrollBehavior: "smooth" }}>
 					{messages.map((msg, idx) =>
-						<ChatMessage message={msg} key={idx} />
+						<ChatMessage 
+							message={msg} 
+							key={idx} 
+							isNewMessage={idx >= previousMessageCount} 
+						/>
 					)}
 					{isLoading && <CircularProgress variant='outlined' />}
 				</List>
