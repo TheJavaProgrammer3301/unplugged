@@ -1,7 +1,7 @@
 import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
+import Markdown from "react-markdown";
 import { useNavigate } from "react-router";
-import { MDXRenderer } from "~/mdx-renderer";
 import "./ai-chat-page.css";
 import therynLogo from "./theryn.png"; // Make sure this path is correct
 
@@ -9,7 +9,7 @@ function ChatMessage({ message }: { message: ChatCompletionMessageParam }) {
 	return <div
 		className={`chat-bubble ${message.role === "user" ? "user" : "assistant"}`}
 	>
-		{<MDXRenderer source={message.content?.toString() ?? ""} />}
+		<Markdown>{message.content?.toString() ?? ""}</Markdown>
 	</div>
 }
 
