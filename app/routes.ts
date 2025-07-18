@@ -6,6 +6,7 @@ export default [
   route("/login", "routes/login.tsx"),
   route("/quote-bank", "routes/quote-bank.tsx"),
   route("/journal", "routes/journal.tsx"),
+  route("/journal-entries", "routes/journal-entries.tsx"),
   route("/ai-chat/:chatId?", "routes/ai-chat.tsx"),
   route("/saved-chats", "routes/saved-chats.tsx"),
   route("/saved-quotes", "routes/saved-quotes.tsx"),

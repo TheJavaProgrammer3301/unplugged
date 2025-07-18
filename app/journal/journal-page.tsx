@@ -64,6 +64,10 @@ export default function JournalPage() {
         <button className="journal-save" onClick={handleSave}>
           Save Entry
         </button>
+
+        <button className="journal-previous" onClick={() => navigate("/journal-entries")}>
+          Previous Entries
+        </button>
       </div>
     </div>
   );
