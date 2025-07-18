@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation } from "./write-api";
+import { addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -71,6 +71,21 @@ router.post(`${BACKEND_PREFIX}/conversations/:conversationId/messages`, async (r
 	}
 
 	return await sendMessageToConversation(request.env, conversationId, body.message);
+});
+
+router.post(`${BACKEND_PREFIX}/journals`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.contents || !Array.isArray(body.contents)) {
+		return new Response("Missing or invalid contents", { status: 400 });
+	}
+
+	return await createJournalEntry(request.env, userId, body.contents);
 });
 
 export const MAIN_ROUTER = router;
