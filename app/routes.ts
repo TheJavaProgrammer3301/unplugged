@@ -8,6 +8,7 @@ export default [
   route("/journal", "routes/journal.tsx"),
   route("/ai-chat/:chatId?", "routes/ai-chat.tsx"),
   route("/saved-chats", "routes/saved-chats.tsx"),
+  route("/saved-quotes", "routes/saved-quotes.tsx"),
   route("/profile", "routes/profile.tsx"),
   route("/mind-bank", "routes/mind-bank.tsx"),
   route("/*", "routes/not-found.tsx"),
