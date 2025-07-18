@@ -1,5 +1,6 @@
 import React from "react";
 import "./shop-page.css";
+import "~/index.scss";
 
 interface GemBundle {
   price: number;
