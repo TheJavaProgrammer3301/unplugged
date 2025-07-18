@@ -24,11 +24,21 @@
 .stat-box {
   background: rgba(255, 255, 255, 0.12);
   padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
+  border-radius: 1rem;
   margin-bottom: 0.25rem;
   backdrop-filter: blur(6px);
   box-shadow: 0 2px 10px rgba(255, 255, 255, 0.15);
   color: #ccc6ff;
+  text-align:center;
+  cursor:pointer;
+  transition: background 0.4s ease, box-shadow 0.4s ease;
+  border:none;
+}
+
+.stat-box:hover {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
 }
 
 .greeting {

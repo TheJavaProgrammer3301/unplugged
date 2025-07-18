@@ -1,5 +1,6 @@
 import React from "react";
 import "./weekly-summary-page.css";
+import "~/index.scss";
 
 const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 

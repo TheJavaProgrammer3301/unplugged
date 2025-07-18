@@ -19,7 +19,7 @@ export default function LandingPage({ accountInfo }: { accountInfo: SanitizedUse
 				<h1 className="login-title">Welcome to<br />UNPLUGGED</h1>
 				<div className="login-buttons">
 					<button className="login-button" onClick={() => { window.location.href = "/login"; }}>Log In</button>
-					<button className="signup-button">Sign Up</button>
+					<button className="signup-button" onClick={() => { window.location.href = "/signup"; }}>Sign Up</button>
 				</div>
 			</div>
 		</div>

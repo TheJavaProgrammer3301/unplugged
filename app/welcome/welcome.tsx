@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import type { SanitizedUserData } from "workers/read-api";
 import "~/index.scss";
 import "./welcome.css";
+import therynLogo from "./theryn-ai-logo.png";
 
 export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {
 	const navigate = useNavigate();
@@ -58,8 +59,8 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 					</div>
 
 					<div className="stats">
-						<div className="stat-box">💰 {accountInfo.coins} 💎 {accountInfo.diamonds}</div>
-						<div className="stat-box">🔥 {accountInfo.streak}</div>
+						<button className="stat-box" onClick={() => navigate("/shop")}>💰 {accountInfo.coins} 💎 {accountInfo.diamonds}</button><br></br>
+						<button className="stat-box" onClick={() => navigate("/streak")}>🔥 {accountInfo.streak}</button>
 					</div>
 				</div>
 
@@ -75,7 +76,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 				<div ref={containerRef} style={{ position: "relative", marginTop: "auto" }}>
 					<button className="ai-therapy" type="button" onClick={() => setShowPopup((v) => !v)}>
 						<span>AI Therapy</span>
-						<img src="app/welcome/theryn-ai-logo.png" alt="Theryn AI Logo" />
+						<img src={therynLogo} alt="Theryn AI Logo" />
 					</button>
 
 					{showPopup && (
