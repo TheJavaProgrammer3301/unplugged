@@ -16,8 +16,6 @@ const getMonthDays = (month: number, year: number) => {
 export default function StreakPage({ accountInfo, activeDays }: { accountInfo: SanitizedUserData, activeDays: string[] }) {
 	const daysThisMonth = getMonthDays(today.getMonth(), today.getFullYear());
 
-	console.log(activeDays);
-
 	const isActive = (date: Date) =>
 		activeDays.includes(date.toISOString().slice(0, 10));
 

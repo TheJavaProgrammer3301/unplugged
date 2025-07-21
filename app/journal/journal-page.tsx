@@ -9,20 +9,14 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 	const [entries, setEntries] = useState(["", "", ""]);
 
 	useEffect(() => {
-    if (entry?.content) {
-      setEntries([
-        entry.content[0] || "",
-        entry.content[1] || "",
-        entry.content[2] || "",
-      ]);
-    }
-
-    if (entry) {
-		console.log("📖 Viewing existing journal entry:", entry);
-	} else {
-		console.log("📝 Creating a new journal entry");
-	}
-  }, [entry]);
+		if (entry?.content) {
+			setEntries([
+				entry.content[0] || "",
+				entry.content[1] || "",
+				entry.content[2] || "",
+			]);
+		}
+	}, [entry]);
 
 
 	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
