@@ -1,5 +1,6 @@
 import { getUserDailyRoutine } from "workers/read-api";
 import { getSessionIdFromRequest, getUserIdFromSession } from "workers/utils";
+import { resetDailyRoutineItemCompletionStatesIfNecessary } from "workers/write-api";
 import DailyRoutinePage from "../daily-routine/daily-routine-page";
 import type { Route } from "./+types/daily-routine";
 
@@ -13,6 +14,9 @@ export function meta({ }: Route.MetaArgs) {
 export async function loader({ request, context }: Route.LoaderArgs) {
 	const sessionId = getSessionIdFromRequest(request);
 	const userId = sessionId !== null ? await getUserIdFromSession(context.cloudflare.env, sessionId) : null;
+
+	if (userId) await resetDailyRoutineItemCompletionStatesIfNecessary(context.cloudflare.env, userId);
+
 	const routine = userId !== null ? await getUserDailyRoutine(context.cloudflare.env, userId) : null;
 
 	return { routine };
