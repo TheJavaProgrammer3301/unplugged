@@ -18,5 +18,6 @@ export default [
   route("/streak", "routes/streak.tsx"),
   route("/shop", "routes/shop.tsx"),
   route("/signup", "routes/signup.tsx"),
+  route("/leaderboard", "routes/leaderboard.tsx"),
   route("/*", "routes/not-found.tsx"),
 ] satisfies RouteConfig;

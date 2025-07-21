@@ -45,3 +45,21 @@
   font-weight: bold;
   box-shadow: 0 0 8px #6a00ffaa;
 }
+
+.gold-leaderboard-button {
+  margin-top: auto;
+  background: linear-gradient(135deg, #ffd700, #f5c518);
+  color: #2c1f00;
+  font-weight: bold;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(255, 215, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gold-leaderboard-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(255, 215, 0, 0.45);
+}
