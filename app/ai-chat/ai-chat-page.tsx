@@ -59,7 +59,18 @@ function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessage
 		}
 		
 		// Try to play audio file first
-		currentAudio = new Audio(`/${soundName}.mp3`);
+		let audioFileName: string = soundName;
+		if (soundName === 'happy') {
+			// 1/1000 chance to play "sayonara.mp3" instead of "happy.mp3"
+			if (Math.random() < 0.001) {
+				audioFileName = 'sayonara';
+			}
+			if (currentAudio) {
+				currentAudio.pause();
+				currentAudio.currentTime = 0;
+			}
+		}
+		currentAudio = new Audio(`/${audioFileName}.mp3`);
 		currentAudio.play().catch(() => {
 			// Fallback: create different sounds based on command
 			try {
