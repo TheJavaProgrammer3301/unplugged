@@ -150,3 +150,23 @@ export async function getActiveDays(env: Env, userId: string): Promise<string[]>
 		return date.toISOString().slice(0, 10);
 	});
 }
+
+export async function getLastDayBeginTimeFromDailyRoutineCompletionStatusAndUpdatedAtTime(env: Env, userId: string): Promise<number | null> {
+	// select routineItems where completed is true, then find the one that was updatedAt the longest time ago
+	const result = await env.DB
+		.prepare('SELECT updatedAt FROM routineItems WHERE user = ? AND completed = 1 ORDER BY updatedAt DESC LIMIT 1')
+		.bind(userId)
+		.first();
+
+	if (!result) return null;
+
+	return result.updatedAt as number;
+}
+
+export async function getStreakLeaderboard(env: Env): Promise<SanitizedUserData[]> {
+	const result = await env.DB
+		.prepare('SELECT id, name, email, coins, diamonds, streak FROM users ORDER BY streak DESC LIMIT 10')
+		.all();
+
+	return result.results.map(row => sanitizeUserData(row));
+}

@@ -360,3 +360,18 @@ export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
 		}
 	}
 }
+
+export async function resetDailyRoutineItemCompletionStatesIfNecessary(env: Env, userId: string): Promise<void> {
+	const lastLoggedOn = await getLastLoggedOnTime(env, userId);
+	const now = Date.now();
+
+	if (!lastLoggedOn) return;
+
+	const timeDiff = now - lastLoggedOn;
+	const oneDayMs = 24 * 60 * 60 * 1000;
+
+	if (timeDiff >= oneDayMs) {
+		// Reset all routine items to not completed
+		await env.DB.prepare('UPDATE routineItems SET completed = 0 WHERE user = ?').bind(userId).run();
+	}
+}
