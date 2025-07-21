@@ -136,3 +136,17 @@ export async function getCurrentChallenge(env: Env, userId: string): Promise<Cha
 		createdAt: result?.createdAt as number ?? 0
 	};
 }
+
+// convert logonTimes createdAt to the format "YYYY-MM-DD"
+export async function getActiveDays(env: Env, userId: string): Promise<string[]> {
+	const result = await env.DB
+		.prepare('SELECT createdAt FROM logonTimes WHERE user = ?')
+		.bind(userId)
+		.all();
+
+	return result.results.map(row => {
+		const date = new Date(row.createdAt as number);
+		
+		return date.toISOString().slice(0, 10);
+	});
+}

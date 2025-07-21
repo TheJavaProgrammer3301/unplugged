@@ -2,6 +2,7 @@ import * as EmailValidator from 'email-validator';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
 import { getCurrentChallengeCreatedAt } from './read-api';
+import { getLastLoggedOnTime } from './utils';
 
 // needs central
 const JOURNAL_QUESTIONS = ["How are you feeling today?", "What happened today?", "What's one goal for tomorrow?"];
@@ -331,4 +332,31 @@ export async function ensureExpirationOfChallengeFromCreatedAt(env: Env, userId:
 	}
 
 	return false;
+}
+
+export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
+	const lastLoggedOn = await getLastLoggedOnTime(env, userId);
+	const now = Date.now();
+
+	if (!lastLoggedOn) {
+		// No last logged in - set it to now, set streak to 1
+		await env.DB.prepare('INSERT INTO logonTimes (user, createdAt) VALUES (?, ?)').bind(userId, now).run();
+		await env.DB.prepare('UPDATE users SET streak = 1 WHERE id = ?').bind(userId).run();
+	} else {
+		const timeDiff = now - lastLoggedOn;
+		const oneDayMs = 24 * 60 * 60 * 1000;
+		
+		if (timeDiff < oneDayMs) {
+			// Has been <24h since last log on - don't update
+			return;
+		} else if (timeDiff < 2 * oneDayMs) {
+			// Has been >24h <48h - update, increment streak
+			await env.DB.prepare('INSERT INTO logonTimes (user, createdAt) VALUES (?, ?)').bind(userId, now).run();
+			await env.DB.prepare('UPDATE users SET streak = streak + 1 WHERE id = ?').bind(userId).run();
+		} else {
+			// Has been >48h - update, set streak to 0
+			await env.DB.prepare('INSERT INTO logonTimes (user, createdAt) VALUES (?, ?)').bind(userId, now).run();
+			await env.DB.prepare('UPDATE users SET streak = 0 WHERE id = ?').bind(userId).run();
+		}
+	}
 }
