@@ -19,25 +19,40 @@
   border: 1px solid #ccc;
 }
 
+.gem-display {
+  text-align: center;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #ffd700;
+  background: #222;
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
 .quote-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-    max-height: 400px; /* or whatever height fits your design */
+  gap: 12px;
+  max-height: 380px;
   overflow-y: auto;
-  padding-right: 8px; /* optional, for scrollbar spacing */
 }
 
 .quote-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-left: 4px solid #6a00ff;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  box-shadow: 0 2px 6px rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, #1e1e2f, #2d2d3e);
+  border-radius: 12px;
+  padding: 16px;
+  color: white;
+  font-size: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70px;
+  border-left: 6px solid transparent;
 }
 
+/* Category-specific border colors */
 .quote-card.motivation {
   border-left-color: #ff4b4b; /* red */
 }
@@ -52,4 +67,20 @@
 
 .quote-card.loneliness {
   border-left-color: #3498db; /* blue */
+}
+
+.unlock-button {
+  background: linear-gradient(135deg, #f39c12, #f1c40f);
+  border: none;
+  color: #2c1f00;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.2s ease;
+}
+
+.unlock-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }

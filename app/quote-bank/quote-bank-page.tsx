@@ -2,6 +2,12 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import "~/index.scss";
 import "./quote-bank-page.css";
+import { useEffect } from "react";
+
+interface Quote {
+  text: string;
+  category: string;
+}
 
 const allQuotes = [
   { text: "\"Nobody owes you nothin’. You owe yourself.\" - Rocky Balboa", category: "motivation" },
@@ -406,13 +412,7 @@ const allQuotes = [
   { text: "\"Loneliness asks hard questions, but it never lies.\" – Unknown", category: "loneliness" }
 ];
 
-interface Quote {
-  text: string;
-  category: string;
-}
-
-function shuffleArray(array: Quote[]): Quote[] {
-  // Fisher-Yates (aka Knuth) Shuffle algorithm
+function shuffleArray<T>(array: T[]): T[] {
   const newArr = [...array];
   for (let i = newArr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -423,13 +423,33 @@ function shuffleArray(array: Quote[]): Quote[] {
 
 export default function QuoteBankPage() {
   const [filter, setFilter] = useState("all");
+  const [gems, setGems] = useState(50);
+  const [unlockedTexts, setUnlockedTexts] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  // useMemo to avoid reshuffling on every render unless filter changes
+  useEffect(() => {
+    const stored = localStorage.getItem("unlockedQuoteTexts");
+    if (stored) {
+      setUnlockedTexts(JSON.parse(stored));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("unlockedQuoteTexts", JSON.stringify(unlockedTexts));
+  }, [unlockedTexts]);
+
   const filteredQuotes = useMemo(() => {
-    const filtered = filter === "all" ? allQuotes : allQuotes.filter(q => q.category === filter);
+    const filtered =
+      filter === "all" ? allQuotes : allQuotes.filter((q) => q.category === filter);
     return shuffleArray(filtered);
   }, [filter]);
+
+  const handleUnlock = (quoteText: string) => {
+    if (gems >= 10 && !unlockedTexts.includes(quoteText)) {
+      setGems((g) => g - 10);
+      setUnlockedTexts((prev) => [...prev, quoteText]);
+    }
+  };
 
   return (
     <div className="quote-page-wrapper">
@@ -443,8 +463,10 @@ export default function QuoteBankPage() {
           <h1>Quote Bank</h1>
         </div>
 
+        <div className="gem-display">💎 Gems: {gems}</div>
+
         <div className="sort-controls">
-          <label htmlFor="sort-select">Sort by:</label>
+          <label htmlFor="sort-select">Filter:</label>
           <select
             id="sort-select"
             value={filter}
@@ -459,13 +481,25 @@ export default function QuoteBankPage() {
         </div>
 
         <div className="quote-list">
-          {filteredQuotes.map((q, i) => (
-            <div key={i} className={`quote-card ${q.category}`}>
-              {q.text}
-            </div>
-          ))}
+          {filteredQuotes.map((quote, index) => {
+            const isUnlocked = unlockedTexts.includes(quote.text);
+            return (
+              <div key={index} className={`quote-card ${quote.category}`}>
+                {isUnlocked ? (
+                  <span className="quote-text">{quote.text}</span>
+                ) : (
+                  <div className="locked-quote">
+                    <button onClick={() => handleUnlock(quote.text)}>
+                      🔒 Unlock for 10 💎
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
   );
 }
+
