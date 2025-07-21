@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation, updateDailyRoutineItem } from "./write-api";
+import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation, updateDailyRoutineItem } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -103,19 +103,31 @@ router.post(`${BACKEND_PREFIX}/daily-routine`, async (request) => {
 	return await addDailyRoutineItem(request.env, userId, body.item);
 });
 
-router.put(`${BACKEND_PREFIX}/daily-routine/completion`, async (request) => {
+router.put(`${BACKEND_PREFIX}/daily-routine/:itemId`, async (request) => {
 	const body = await request.req.json() as any;
+	const itemId = request.req.params.itemId;
 
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
-	if (!body.item || typeof body.completed !== "boolean") {
+	if (typeof body.completed !== "boolean") {
 		return new Response("Missing item or completed status", { status: 400 });
 	}
 
-	return await updateDailyRoutineItem(request.env, userId, body.item, body.completed);
+	return await updateDailyRoutineItem(request.env, userId, itemId, body.completed);
+});
+
+router.delete(`${BACKEND_PREFIX}/daily-routine/:itemId`, async (request) => {
+	const itemId = request.req.params.itemId;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	return await deleteDailyRoutineItem(request.env, userId, itemId);
 });
 
 export const MAIN_ROUTER = router;
