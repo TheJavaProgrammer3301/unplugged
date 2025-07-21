@@ -283,7 +283,7 @@ export async function setDailyChallenge(env: Env, userId: string, challenge: str
 		}
 
 		{
-			const statement = env.DB.prepare('UPDATE currentChallenges SET challengeCreatedAt = ? WHERE user = ?').bind(challenge, createdTime, userId);
+			const statement = env.DB.prepare('INSERT OR REPLACE INTO currentChallenges (user, challengeCreatedAt) VALUES (?, ?)').bind(userId, createdTime);
 
 			await statement.run();
 		}
