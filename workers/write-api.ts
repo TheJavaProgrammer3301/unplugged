@@ -356,7 +356,7 @@ export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
 		} else {
 			// Has been >48h - update, set streak to 0
 			await env.DB.prepare('INSERT INTO logonTimes (user, createdAt) VALUES (?, ?)').bind(userId, now).run();
-			await env.DB.prepare('UPDATE users SET streak = 0 WHERE id = ?').bind(userId).run();
+			await env.DB.prepare('UPDATE users SET streak = 1 WHERE id = ?').bind(userId).run();
 		}
 	}
 }
