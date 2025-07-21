@@ -33,6 +33,11 @@ export type RoutineItem = {
 	completed: boolean;
 }
 
+export type Challenge = { 
+	challenge: string; 
+	createdAt: number; 
+}
+
 export async function getAccountInfo(env: Env, userId: string): Promise<SanitizedUserData | null> {
 	const statement = env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId);
 	const result = await statement.first();
@@ -104,4 +109,30 @@ export async function getAccountInfoFromSessionId(env: Env, sessionId: string): 
 	if (!userId) return null;
 
 	return await getAccountInfo(env, userId);
+}
+
+export async function getCurrentChallengeCreatedAt(env: Env, userId: string): Promise<number | null> {
+	console.log("Getting current challenge for userId:", userId);
+	const result = await env.DB
+		.prepare('SELECT challengeCreatedAt FROM currentChallenges WHERE user = ?')
+		.bind(userId)
+		.first();
+
+	return result?.challengeCreatedAt as number | null;
+}
+
+export async function getCurrentChallenge(env: Env, userId: string): Promise<Challenge | null> {
+	const challengeCreatedAt = await getCurrentChallengeCreatedAt(env, userId);
+	
+	if (!challengeCreatedAt) return null;
+
+	const result = await env.DB
+		.prepare('SELECT challenge, createdAt FROM currentChallenges WHERE user = ? AND createdAt = ?')
+		.bind(userId, challengeCreatedAt)
+		.first();
+
+	return {
+		challenge: result?.challenge as string ?? null,
+		createdAt: result?.createdAt as number ?? 0
+	};
 }

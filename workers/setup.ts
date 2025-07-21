@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation, updateDailyRoutineItem } from "./write-api";
+import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, sendMessageToConversation, setDailyChallenge, setNameOfConversation, updateDailyChallenge, updateDailyRoutineItem } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -128,6 +128,36 @@ router.delete(`${BACKEND_PREFIX}/daily-routine/:itemId`, async (request) => {
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	return await deleteDailyRoutineItem(request.env, userId, itemId);
+});
+
+router.post(`${BACKEND_PREFIX}/challenge`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.challenge) {
+		return new Response("Missing challenge", { status: 400 });
+	}
+
+	return await setDailyChallenge(request.env, userId, body.challenge);
+});
+
+router.put(`${BACKEND_PREFIX}/challenge`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.completed) {
+		return new Response("Missing completed status", { status: 400 });
+	}
+
+	return await updateDailyChallenge(request.env, userId, body.completed);
 });
 
 export const MAIN_ROUTER = router;

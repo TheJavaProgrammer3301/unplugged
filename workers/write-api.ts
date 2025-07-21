@@ -1,6 +1,7 @@
 import * as EmailValidator from 'email-validator';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
+import { getCurrentChallengeCreatedAt } from './read-api';
 
 // needs central
 const JOURNAL_QUESTIONS = ["How are you feeling today?", "What happened today?", "What's one goal for tomorrow?"];
@@ -265,4 +266,69 @@ export async function logIn(env: Env, email: string, password: string): Promise<
 	if (!user) return new Response("Invalid email or password", { status: 401 });
 
 	return createSession(env, user.id as string);
+}
+
+export async function setDailyChallenge(env: Env, userId: string, challenge: string): Promise<Response> {
+	console.warn("fein");
+	const output = await ensureExpirationOfChallenge(env, userId);
+	console.log("Output of ensureExpirationOfChallenge:", output);
+	if (output) {
+		console.log("Expired");
+		const createdTime = Date.now();
+
+		{
+			const statement = env.DB.prepare('INSERT INTO challenges (user, challenge, createdAt) VALUES (?, ?, ?)').bind(userId, challenge, createdTime);
+
+			await statement.run();
+		}
+
+		{
+			const statement = env.DB.prepare('UPDATE currentChallenges SET challengeCreatedAt = ? WHERE user = ?').bind(challenge, createdTime, userId);
+
+			await statement.run();
+		}
+
+		return new Response(null, { status: 204 });
+	} else return new Response("Current challenge not expired", { status: 409 });
+}
+
+export async function updateDailyChallenge(env: Env, userId: string, completed: boolean): Promise<Response> {
+	const currentDailyChallengeCreatedAt = await getCurrentChallengeCreatedAt(env, userId);
+
+	if (currentDailyChallengeCreatedAt === null) return new Response(null, { status: 204 });
+
+	if (await ensureExpirationOfChallengeFromCreatedAt(env, userId, currentDailyChallengeCreatedAt) === false) {
+		const statement = env.DB.prepare('UPDATE challenges SET completed = ? WHERE user = ? AND createdAt = ?').bind(completed ? 1 : 0, userId, currentDailyChallengeCreatedAt);
+
+		await statement.run();
+	}
+
+	return new Response(null, { status: 204 });
+}
+
+export async function ensureExpirationOfChallenge(env: Env, userId: string): Promise<boolean> {
+	const currentDailyChallengeCreatedAt = await getCurrentChallengeCreatedAt(env, userId);
+
+	console.log(currentDailyChallengeCreatedAt, "guh");
+
+	if (!currentDailyChallengeCreatedAt) return true;
+
+	console.log(currentDailyChallengeCreatedAt, "duh");
+
+	return await ensureExpirationOfChallengeFromCreatedAt(env, userId, currentDailyChallengeCreatedAt);
+}
+
+export async function ensureExpirationOfChallengeFromCreatedAt(env: Env, userId: string, createdAt: number): Promise<boolean> {
+	const currentTime = Date.now();
+	const oneDayMs = 24 * 60 * 60 * 1000;
+
+	if (currentTime - createdAt! > oneDayMs) {
+		const statement = env.DB.prepare('DELETE FROM currentChallenges WHERE user = ?').bind(userId);
+
+		await statement.run();
+
+		return true;
+	}
+
+	return false;
 }
