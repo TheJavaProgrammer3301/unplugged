@@ -127,7 +127,7 @@ export async function getCurrentChallenge(env: Env, userId: string): Promise<Cha
 	if (!challengeCreatedAt) return null;
 
 	const result = await env.DB
-		.prepare('SELECT challenge, createdAt FROM currentChallenges WHERE user = ? AND createdAt = ?')
+		.prepare('SELECT challenge, createdAt FROM challenges WHERE user = ? AND createdAt = ?')
 		.bind(userId, challengeCreatedAt)
 		.first();
 
