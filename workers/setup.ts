@@ -10,21 +10,21 @@ const router = new Router<Env>();
 router.post(`${BACKEND_PREFIX}/create-account`, async (request) => {
 	const body = await request.req.json() as any;
 
-	if (!body.name || !body.password || !body.email) {
-		return new Response("Missing name, email or password", { status: 400 });
+	if (!body.name || !body.password || !body.email || !body.username) {
+		return new Response("Missing name, email, password or username", { status: 400 });
 	}
 
-	return createAccount(request.env, body.email, body.name, body.password);
+	return createAccount(request.env, body.email, body.name, body.password, body.username);
 });
 
 router.post(`${BACKEND_PREFIX}/create-account-and-session`, async (request) => {
 	const body = await request.req.json() as any;
 
-	if (!body.name || !body.password || !body.email) {
-		return new Response("Missing name, email or password", { status: 400 });
+	if (!body.name || !body.password || !body.email || !body.username) {
+		return new Response("Missing name, email, password or username", { status: 400 });
 	}
 
-	return createAccountAndLogIn(request.env, body.email, body.name, body.password);
+	return createAccountAndLogIn(request.env, body.email, body.name, body.password, body.username);
 });
 
 router.post(`${BACKEND_PREFIX}/create-session`, async (request) => {
