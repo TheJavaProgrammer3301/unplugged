@@ -62,7 +62,7 @@ function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessage
 		let audioFileName: string = soundName;
 		if (soundName === 'happy') {
 			// 1/1000 chance to play "sayonara.mp3" instead of "happy.mp3"
-			if (Math.random() < 0.001) {
+			if (Math.random() < 0.2) {
 				audioFileName = 'sayonara';
 			}
 			if (currentAudio) {
