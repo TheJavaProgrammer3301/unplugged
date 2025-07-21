@@ -18,14 +18,42 @@ const MindBankPage = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [selectedChallenge, setSelectedChallenge] = useState("");
   const [canSpin, setCanSpin] = useState(true);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const anglePerSlice = 360 / challenges.length;
 
   useEffect(() => {
-    const lastSpinDate = localStorage.getItem("lastSpinDate");
-    const today = new Date().toDateString();
-    if (lastSpinDate === today) {
+    const lastSpin = localStorage.getItem("lastSpinDate");
+    const now = new Date();
+    const today = now.toDateString();
+
+    if (lastSpin === today) {
       setCanSpin(false);
+      const midnight = new Date();
+      midnight.setHours(24, 0, 0, 0);
+
+      const updateTimer = () => {
+        const diff = midnight.getTime() - new Date().getTime();
+        if (diff <= 0) {
+          setCanSpin(true);
+          setTimeLeft("");
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        setTimeLeft(
+          `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
+        );
+      };
+
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+      return () => clearInterval(interval);
     }
   }, []);
 
@@ -77,12 +105,12 @@ const MindBankPage = () => {
         </div>
 
         <button className="spin-button" onClick={spinWheel} disabled={!canSpin}>
-          {canSpin ? "Spin for Challenge" : "Come Back Tomorrow!"}
+          {canSpin ? "Spin for Challenge" : `Next spin in ${timeLeft}`}
         </button>
 
         <div className="challenge-box">
           <h2>Challenge</h2>
-          <p>{selectedChallenge || "Spin the wheel to receive a challenge!"}</p>
+          <p dangerouslySetInnerHTML={{ __html: selectedChallenge || "Spin the wheel to receive a challenge!" }} />
         </div>
       </div>
     </div>

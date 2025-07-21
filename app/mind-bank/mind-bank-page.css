@@ -94,3 +94,10 @@
 .challenge-box h2 {
   margin-bottom: 0.5rem;
 }
+
+.countdown-text {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
