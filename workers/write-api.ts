@@ -1,7 +1,6 @@
 import * as EmailValidator from 'email-validator';
 import OpenAI from 'openai';
 import type { ChatCompletionMessageParam } from 'openai/resources';
-import { getDailyRoutineCompletion } from './read-api';
 
 // needs central
 const JOURNAL_QUESTIONS = ["How are you feeling today?", "What happened today?", "What's one goal for tomorrow?"];
@@ -48,6 +47,53 @@ export async function getSavedChats(env: Env, userId: string): Promise<{ id: str
 		lastUpdatedAt: row.lastUpdatedAt as number,
 		name: (row.name ?? "none") as string
 	}));
+}
+
+export async function addDailyRoutineItem(env: Env, userId: string, item: string): Promise<Response> {
+	const id = crypto.randomUUID();
+
+	try {
+		const statement = env.DB
+			.prepare('INSERT INTO routineItems (user, name, id, completed) VALUES (?, ?, ?, 0)')
+			.bind(userId, item, id);
+
+		await statement.run();
+
+		return Response.json({ id }, { status: 201 });
+	} catch (error) {
+		console.warn("Error adding daily routine item:", error);
+		return new Response("Error adding daily routine item", { status: 500 });
+	}
+}
+
+export async function deleteDailyRoutineItem(env: Env, userId: string, itemId: string): Promise<Response> {
+	try {
+		const statement = env.DB
+			.prepare('DELETE FROM routineItems WHERE user = ? AND id = ?')
+			.bind(userId, itemId);
+
+		await statement.run();
+
+		return new Response(null, { status: 204 });
+	} catch (error) {
+		console.warn("Error deleting daily routine item:", error);
+		return new Response("Error deleting daily routine item", { status: 500 });
+	}
+}
+
+export async function updateDailyRoutineItem(env: Env, userId: string, itemId: string, completed: boolean): Promise<Response> {
+	try {
+		const statement = env.DB
+			.prepare('UPDATE routineItems SET completed = ? WHERE user = ? AND id = ?')
+			.bind(completed ? 1 : 0, userId, itemId);
+
+		await statement.run();
+
+		return new Response(null, { status: 204 });
+	} catch (error) {
+		console.warn("Error updating daily routine item:", error);
+		return new Response("Error updating daily routine item", { status: 500 });
+	}
 }
 
 // generate a name based on current conversation
@@ -179,43 +225,6 @@ export async function sendMessageToConversation(env: Env, conversationId: string
 		console.warn(e);
 		return new Response("Server error", { status: 500 });
 	}
-}
-
-export async function setDailyRoutineCompletion(env: Env, userId: string, item: string, completed: boolean): Promise<void> {
-	const completions = await getDailyRoutineCompletion(env, userId);
-	completions[item] = completed;
-
-	const existing = await env.DB.prepare('SELECT COUNT(*) FROM dailyRoutine WHERE user = ?').bind(userId).first();
-	const exists = (existing?.['COUNT(*)'] as number | null) ?? 0 > 0;
-
-	if (exists) {
-		const statement = env.DB
-			.prepare('UPDATE dailyRoutine SET items = ? WHERE user = ?')
-			.bind(JSON.stringify(completions), userId);
-		await statement.run();
-	} else {
-		const statement = env.DB
-			.prepare('INSERT INTO dailyRoutine (user, items) VALUES (?, ?)')
-			.bind(userId, JSON.stringify(completions));
-		await statement.run();
-	}
-}
-
-export async function updateDailyRoutineItems(env: Env, items: string[], userId: string): Promise<void> {
-	// get
-	const completions = await getDailyRoutineCompletion(env, userId);
-
-	const newCompletions = items.reduce((acc, item) => {
-		acc[item] = completions[item] ?? false;
-
-		return acc;
-	}, {} as Record<string, boolean>);
-
-	const statement = env.DB
-		.prepare('INSERT INTO dailyRoutine (user, items) VALUES (?, ?) ON CONFLICT(user) DO UPDATE SET items = excluded.items')
-		.bind(userId, JSON.stringify(newCompletions));
-
-	await statement.run();
 }
 
 export async function createJournalEntry(env: Env, userId: string, contents: string[]): Promise<Response> {

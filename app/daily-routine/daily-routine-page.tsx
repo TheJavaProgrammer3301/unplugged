@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router";
+import type { RoutineItem } from "workers/read-api";
 import "~/index.scss";
 import "./daily-routine-page.css";
 
-export default function RoutinePage({ completions }: { completions: Record<string, boolean> | null }) {
-	const [tasks, setTasks] = useState<Record<string, boolean>>(completions ?? {});
+const TEMP_ID_PREFIX = "temp";
+
+export default function RoutinePage({ routine }: { routine: RoutineItem[] | null }) {
+	const [tasks, setTasks] = useState<RoutineItem[]>(routine ?? []);
 	const [newTask, setNewTask] = useState("");
 	const [showInput, setShowInput] = useState(false);
 	const navigate = useNavigate();
@@ -12,40 +15,68 @@ export default function RoutinePage({ completions }: { completions: Record<strin
 	const handleAddTask = async () => {
 		if (newTask.trim() === "") return;
 
-		const taskToAdd = newTask.trim();
-		setTasks((prev) => ({ ...prev, [taskToAdd]: false }));
+		const id = `${TEMP_ID_PREFIX}-${Date.now()}`;
+
 		setNewTask("");
 
+		const taskToAdd = newTask.trim();
+
+		setTasks((prev) => [...prev, { id, name: taskToAdd, completed: false }]);
+
 		try {
-			await fetch("/api/daily-routine", {
+			const response = await fetch("/api/daily-routine", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(Object.keys(tasks)),
+				body: JSON.stringify({ item: taskToAdd }),
 			});
+
+			if (!response.ok) throw new Error("Failed to add task");
+
+			const body = await response.json() as { id: string };
+
+			// Replace the temp ID with the real ID from the server
+			setTasks((prev) => prev.map(task => task.id === id ? { ...task, id: body.id } : task));
 		} catch (e) {
 			setTasks((prev) => {
 				// remove the task we just added
-				const { [taskToAdd]: removed, ...rest } = prev;
-				return rest;
+				return prev.filter(task => task.id !== id);
 			});
+			console.warn("Error adding task:", e);
+			// alert("Failed to add task. Please try again."); // Simple error handling
 		}
 	};
 
-	const handleToggleTask = async (text: string) => {
-		if (showInput) return; // Prevent toggling while editing
+	const handleToggleTask = async (id: string) => {
+		let referencedTask: RoutineItem | undefined;
 
-		const previous = tasks[text];
+		setTasks((prev) => {
+			referencedTask = prev.find(task => task.id === id);
 
-		setTasks((prev) => ({ ...prev, [text]: !previous }));
+			if (!referencedTask) return prev;
 
-		try {
+			const updatedTask = { ...referencedTask, completed: !referencedTask.completed };
+
+			console.log("updated", referencedTask)
+
+			return prev.map(task => task.id === id ? updatedTask : task);
+		});
+
+		console.log(referencedTask, tasks);
+
+		if (referencedTask) try {
 			await fetch("/api/daily-routine/completion", {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ item: text, completed: !previous }),
+				body: JSON.stringify({ item: id, completed: !referencedTask.completed }),
 			});
 		} catch (error) {
-			setTasks((prev) => ({ ...prev, [text]: previous }));
+			setTasks((prev) => {
+				const task = prev.find(task => task.id === id);
+				if (!task) return prev;
+
+				const updatedTask = { ...task, completed: !task.completed };
+				return prev.map(task => task.id === id ? updatedTask : task);
+			});
 		}
 	};
 
@@ -67,7 +98,7 @@ export default function RoutinePage({ completions }: { completions: Record<strin
 		}
 	};
 
-	const allCompleted = Object.keys(tasks).length > 0 && Object.values(tasks).every((completed) => completed);
+	const allCompleted = useMemo(() => tasks.length > 0 && tasks.every(v => v.completed), [tasks]);
 
 	return (
 		<div className="app-wrapper">
@@ -85,16 +116,16 @@ export default function RoutinePage({ completions }: { completions: Record<strin
 
 				{/* Task List */}
 				<div className="task-list">
-					{Object.entries(tasks).map(([text, completed]) => (
-						<div key={text} className={`task-card ${completed ? "completed" : ""}`}>
+					{tasks.map(({ id, name, completed }) => (
+						<div key={id} className={`task-card ${completed ? "completed" : ""}`}>
 							<label className="task-label">
 								<input
 									type="checkbox"
 									checked={completed}
-									onChange={() => handleToggleTask(text)}
+									onChange={() => handleToggleTask(id)}
 									disabled={showInput}
 								/>
-								<span>{text}</span>
+								<span>{name}</span>
 							</label>
 							{showInput && (
 								<button

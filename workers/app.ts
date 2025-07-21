@@ -22,11 +22,20 @@ const requestHandler = createRequestHandler(
 
 export default {
 	async fetch(request, env, ctx) {
+		const startTime = Date.now();
+		const pathname = new URL(request.url).pathname;
+		
+		console.debug(`[workers] ${request.method} ${pathname}`);
+		
 		const route = (MAIN_ROUTER as unknown as HackableRouter).getRoute(request);
 
-		if (route) return MAIN_ROUTER.handle(request, env, ctx);
-		else return requestHandler(request, {
+		const response = route ? await MAIN_ROUTER.handle(request, env, ctx) : await requestHandler(request, {
 			cloudflare: { env, ctx },
 		});
+
+		const duration = Date.now() - startTime;
+		console.debug(`[workers] responded to ${request.method} ${pathname} in ${duration}ms`);
+	
+		return response;
 	},
 } satisfies ExportedHandler<Env>;

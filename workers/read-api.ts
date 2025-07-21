@@ -27,6 +27,12 @@ export type JournalEntry = {
 	name: string;
 }
 
+export type RoutineItem = {
+	id: string;
+	name: string;
+	completed: boolean;
+}
+
 export async function getAccountInfo(env: Env, userId: string): Promise<SanitizedUserData | null> {
 	const statement = env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId);
 	const result = await statement.first();
@@ -36,15 +42,17 @@ export async function getAccountInfo(env: Env, userId: string): Promise<Sanitize
 	return sanitizeUserData(result);
 }
 
-export async function getDailyRoutineCompletion(env: Env, userId: string): Promise<Record<string, boolean>> {
+export async function getUserDailyRoutine(env: Env, userId: string): Promise<RoutineItem[]> {
 	const result = await env.DB
-		.prepare('SELECT items FROM dailyRoutine WHERE user = ?')
+		.prepare('SELECT * FROM routineItems WHERE user = ?')
 		.bind(userId)
-		.first();
+		.all();
 
-	if (!result) return {};
-
-	return JSON.parse(result.items as string) as Record<string, boolean>;
+	return result.results.map(row => ({
+		id: row.id as string,
+		name: row.name as string,
+		completed: row.completed === 1
+	}));
 }
 
 export async function didUserCompleteJournalToday(env: Env, userId: string): Promise<boolean> {

@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation } from "./write-api";
+import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, generateNameForConversation, logIn, sendMessageToConversation, setNameOfConversation, updateDailyRoutineItem } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -86,6 +86,36 @@ router.post(`${BACKEND_PREFIX}/journals`, async (request) => {
 	}
 
 	return await createJournalEntry(request.env, userId, body.contents);
+});
+
+router.post(`${BACKEND_PREFIX}/daily-routine`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.item) {
+		return new Response("Missing item", { status: 400 });
+	}
+
+	return await addDailyRoutineItem(request.env, userId, body.item);
+});
+
+router.put(`${BACKEND_PREFIX}/daily-routine/completion`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.item || typeof body.completed !== "boolean") {
+		return new Response("Missing item or completed status", { status: 400 });
+	}
+
+	return await updateDailyRoutineItem(request.env, userId, body.item, body.completed);
 });
 
 export const MAIN_ROUTER = router;

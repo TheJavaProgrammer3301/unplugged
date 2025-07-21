@@ -8,7 +8,7 @@ body {
 	align-items: center;
 	height: 100vh;
 	justify-content: center;
-	background-color: rgb(20, 20, 20);
+	background-color: rgb(10, 10, 10);
 }
 
 #root {
@@ -18,7 +18,7 @@ body {
 	transition: all 0.3s ease;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
 	#root {
 		width: 100vw;
 		height: 100vh;
