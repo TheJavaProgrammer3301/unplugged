@@ -138,7 +138,7 @@ export async function setNameOfConversation(env: Env, conversationId: string, na
 }
 //#endregion utility
 
-export async function createAccount(env: Env, email: string, name: string, password: string): Promise<Response> {
+export async function createAccount(env: Env, email: string, name: string, password: string, username: string): Promise<Response> {
 	const id = crypto.randomUUID();
 
 	if (!EmailValidator.validate(email)) return new Response("Invalid email address", { status: 400 });
@@ -151,8 +151,8 @@ export async function createAccount(env: Env, email: string, name: string, passw
 	if (count && count > 0) return new Response("Account with that email already exists", { status: 409 });
 
 	const statement = env.DB
-		.prepare('INSERT INTO users (id, name, email, password) VALUES (?, ?, ?, ?)')
-		.bind(id, name, email, password);
+		.prepare('INSERT INTO users (id, name, email, password, username) VALUES (?, ?, ?, ?, ?)')
+		.bind(id, name, email, password, username);
 
 	try {
 		await statement.run();
@@ -247,8 +247,8 @@ export async function createJournalEntry(env: Env, userId: string, contents: str
 }
 
 // bindings
-export async function createAccountAndLogIn(env: Env, email: string, name: string, password: string): Promise<Response> {
-	const accountResponse = await createAccount(env, email, name, password);
+export async function createAccountAndLogIn(env: Env, email: string, name: string, password: string, username: string): Promise<Response> {
+	const accountResponse = await createAccount(env, email, name, password, username);
 
 	if (accountResponse.status !== 201) return accountResponse;
 

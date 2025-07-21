@@ -25,13 +25,13 @@ export async function tryLogIn(email: string, password: string) {
 	} else throw body ?? response.statusText
 }
 
-export async function trySignUp(name: string, email: string, password: string) {
+export async function trySignUp(name: string, email: string, password: string, username: string) {
 	const response = await fetch("/api/create-account-and-session", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify({ name, email, password })
+		body: JSON.stringify({ name, email, password, username })
 	});
 
 	const body = await response.text();

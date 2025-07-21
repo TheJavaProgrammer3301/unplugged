@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import type { RoutineItem } from "workers/read-api";
 import "~/index.scss";
@@ -46,28 +46,23 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 		}
 	};
 
-	const handleToggleTask = async (id: string) => {
+	const handleToggleTask = useCallback(async (id: string) => {
 		let referencedTask: RoutineItem | undefined;
+		let jobId = Math.random().toString(36).substring(2, 9);
 
-		setTasks((prev) => {
-			referencedTask = prev.find(task => task.id === id);
+		referencedTask = tasks.find(task => task.id === id);
 
-			if (!referencedTask) return prev;
+		if (!referencedTask) return;
 
-			const updatedTask = { ...referencedTask, completed: !referencedTask.completed };
+		const updatedTask = { ...referencedTask, completed: !referencedTask.completed };
 
-			console.log("updated", referencedTask)
-
-			return prev.map(task => task.id === id ? updatedTask : task);
-		});
-
-		console.log(referencedTask, tasks);
+		setTasks(tasks.map(task => task.id === id ? updatedTask : task));
 
 		if (referencedTask) try {
-			await fetch("/api/daily-routine/completion", {
+			await fetch(`/api/daily-routine/${id}`, {
 				method: "PUT",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ item: id, completed: !referencedTask.completed }),
+				body: JSON.stringify({ completed: !referencedTask.completed }),
 			});
 		} catch (error) {
 			setTasks((prev) => {
@@ -78,25 +73,22 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 				return prev.map(task => task.id === id ? updatedTask : task);
 			});
 		}
-	};
+	}, [tasks]);
 
-	const handleRemoveTask = async (text: string) => {
-		setTasks((prev) => {
-			const { [text]: removed, ...rest } = prev;
+	const handleRemoveTask = useCallback(async (id: string) => {
+		const taskToRemove = tasks.find(task => task.id === id);
 
-			return rest;
-		});
+		setTasks((prev) => prev.filter(task => task.id !== id));
 
 		try {
-			await fetch("/api/daily-routine", {
+			await fetch(`/api/daily-routine/${id}`, {
 				method: "DELETE",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ item: text }),
 			});
 		} catch (error) {
-			setTasks((prev) => ({ ...prev, [text]: false }));
+			setTasks((prev) => [...prev, taskToRemove!]);
 		}
-	};
+	}, [tasks]);
 
 	const allCompleted = useMemo(() => tasks.length > 0 && tasks.every(v => v.completed), [tasks]);
 
@@ -130,7 +122,7 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 							{showInput && (
 								<button
 									className="remove-task-btn"
-									onClick={() => handleRemoveTask(text)}
+									onClick={() => handleRemoveTask(id)}
 								>
 									Remove
 								</button>
