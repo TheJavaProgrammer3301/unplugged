@@ -35,9 +35,10 @@ export type RoutineItem = {
 	completed: boolean;
 }
 
-export type Challenge = { 
-	challenge: string; 
-	createdAt: number; 
+export type Challenge = {
+	challenge: string;
+	createdAt: number;
+	completed: boolean;
 }
 
 export async function getAccountInfo(env: Env, userId: string): Promise<SanitizedUserData | null> {
@@ -114,7 +115,6 @@ export async function getAccountInfoFromSessionId(env: Env, sessionId: string): 
 }
 
 export async function getCurrentChallengeCreatedAt(env: Env, userId: string): Promise<number | null> {
-	console.log("Getting current challenge for userId:", userId);
 	const result = await env.DB
 		.prepare('SELECT challengeCreatedAt FROM currentChallenges WHERE user = ?')
 		.bind(userId)
@@ -125,17 +125,18 @@ export async function getCurrentChallengeCreatedAt(env: Env, userId: string): Pr
 
 export async function getCurrentChallenge(env: Env, userId: string): Promise<Challenge | null> {
 	const challengeCreatedAt = await getCurrentChallengeCreatedAt(env, userId);
-	
+
 	if (!challengeCreatedAt) return null;
 
 	const result = await env.DB
-		.prepare('SELECT challenge, createdAt FROM challenges WHERE user = ? AND createdAt = ?')
+		.prepare('SELECT challenge, createdAt, completed FROM challenges WHERE user = ? AND createdAt = ?')
 		.bind(userId, challengeCreatedAt)
 		.first();
 
 	return {
 		challenge: result?.challenge as string ?? null,
-		createdAt: result?.createdAt as number ?? 0
+		createdAt: result?.createdAt as number ?? 0,
+		completed: (result?.completed ?? 0) === 1
 	};
 }
 
@@ -148,7 +149,7 @@ export async function getActiveDays(env: Env, userId: string): Promise<string[]>
 
 	return result.results.map(row => {
 		const date = new Date(row.createdAt as number);
-		
+
 		return date.toISOString().slice(0, 10);
 	});
 }
