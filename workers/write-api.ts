@@ -108,7 +108,7 @@ export async function generateNameForConversation(env: Env, conversation: ChatCo
 		model: "gpt-4o",
 		messages: [
 			...conversation,
-			{ role: "user", content: "What should we name this conversation? Reply with just the name" }
+			{ role: "user", content: "What should we name this conversation? Reply with just the name. Make it specific to the exact topic, nothing generic or vague." }
 		]
 	});
 
