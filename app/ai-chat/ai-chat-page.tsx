@@ -5,6 +5,7 @@ import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
 import Markdown from "react-markdown";
 import { useNavigate } from "react-router";
+import { playSound } from '~/audio';
 import "~/mui/index.scss";
 import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./ai-chat-page.css";
@@ -35,75 +36,9 @@ const colorsets = {
 const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend', 'uplifting', 'happy', 'sayonara', 'suicideprevention'] as const;
 type SoundCommand = typeof SOUND_COMMANDS[number];
 
-// Shared audio context and current playing state
-let currentAudioContext: AudioContext | null = null;
-let currentOscillator: OscillatorNode | null = null;
-let currentAudio: HTMLAudioElement | null = null;
-
 function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessageParam; isNewMessage?: boolean }) {
 	const set = message.role === "user" ? colorsets.user : colorsets.assistant;
 	const messageContent = message.content?.toString() ?? "";
-
-	// Function to play a specific sound (limited to one at a time)
-	const playSound = (soundName: SoundCommand) => {
-		currentAudio?.pause();
-
-		// Stop any currently playing sound
-		if (currentOscillator) {
-			try {
-				currentOscillator.stop();
-			} catch (e) {
-				// Oscillator might already be stopped
-			}
-			currentOscillator = null;
-		}
-		
-		// Try to play audio file first
-		let audioFileName: string = soundName;
-		if (soundName === 'happy') {
-			// 1/1000 chance to play "sayonara.mp3" instead of "happy.mp3"
-			if (Math.random() < 0.001) {
-				audioFileName = 'sayonara';
-			}
-			if (currentAudio) {
-				currentAudio.pause();
-				currentAudio.currentTime = 0;
-			}
-		}
-		currentAudio = new Audio(`/${audioFileName}.mp3`);
-		currentAudio.play().catch(() => {
-			// Fallback: create different sounds based on command
-			try {
-				if (!currentAudioContext) {
-					currentAudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-				}
-				
-				const oscillator = currentAudioContext.createOscillator();
-				const gainNode = currentAudioContext.createGain();
-				
-				oscillator.connect(gainNode);
-				gainNode.connect(currentAudioContext.destination);
-				
-				// Different frequencies for different sounds
-				const frequency = 600;
-				oscillator.frequency.setValueAtTime(frequency, currentAudioContext.currentTime);
-				gainNode.gain.setValueAtTime(0.1, currentAudioContext.currentTime);
-				gainNode.gain.exponentialRampToValueAtTime(0.01, currentAudioContext.currentTime + 0.3);
-				
-				oscillator.start(currentAudioContext.currentTime);
-				oscillator.stop(currentAudioContext.currentTime + 0.3);
-				
-				currentOscillator = oscillator;
-				
-				// Clear reference when sound ends
-				oscillator.onended = () => {
-					currentOscillator = null;
-				};
-			} catch (error) {
-				console.warn(`Could not play ${soundName} sound:`, error);
-			}
-		});
-	};
 
 	// Function to detect and extract sound commands from message
 	const detectSoundCommands = (content: string): SoundCommand[] => {

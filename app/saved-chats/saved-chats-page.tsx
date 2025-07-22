@@ -21,40 +21,10 @@ export default function SavedChatsPage({ savedChats }: {
 		name: string;
 	}[]
 }) {
-	// const navigate = useNavigate();
-
-	// return (
-	// 	// theme={CURRENT_JOY_THEME}
-	// 	<CssVarsProvider>
-	// 		<Sheet id="root" sx={{ height: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", background: CURRENT_THEME.colors.primaryBackground, padding: `32px`, gap: `16px` }}>
-	// 			<Box sx={{ all: 'unset', display: "flex" }}>
-	// 				<Button
-	// 					color='danger'
-	// 					sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
-	// 					onClick={() => navigate("/dashboard", { replace: true })}
-	// 				>
-	// 					<ArrowBack />
-	// 					<Typography sx={{ color: "white" }}>Back</Typography>
-	// 				</Button>
-	// 				<Box sx={{ flexGrow: 1 }} />
-	// 				<Typography level="h2" component="h1" sx={{ marginLeft: "16px", color: "white", fontWeight: "bold", textAlign: "center" }}>Saved chats</Typography>
-	// 			</Box>
-	// 			<Divider />
-	// 			<List id="chat-messages" sx={{ padding: 0, flexGrow: "1", gap: `16px`, overflowY: "auto", scrollbarGutter: "stable", scrollBehavior: "auto" }}>
-	// 				{savedChats.map((chat) => (
-	// 					<SavedChatCard
-	// 						key={chat.id}
-	// 						id={chat.id}
-	// 						name={chat.name}
-	// 						lastUpdatedAt={chat.lastUpdatedAt}
-	// 						onOpen={(id) => navigate(`/ai-chat/${id}`)}
-	// 					/>
-	// 				))}
-	// 			</List>
-	// 		</Sheet>
-	// 	</CssVarsProvider>
-	// );
 	const navigate = useNavigate();
+
+	// Sort savedChats by lastUpdatedAt in descending order
+	const sortedChats = [...savedChats].sort((a, b) => b.lastUpdatedAt - a.lastUpdatedAt);
 
 	return (
 		<div className="app-wrapper">
@@ -67,7 +37,7 @@ export default function SavedChatsPage({ savedChats }: {
 				</div>
 
 				<div className="chat-list">
-					{savedChats.map((chat) => (
+					{sortedChats.map((chat) => (
 						<div key={chat.id} className="chat-card">
 							<div className="chat-info">
 								<h2 className="chat-title">{chat.name}</h2>

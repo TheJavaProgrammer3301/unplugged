@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import type { SanitizedUserData } from "workers/read-api";
+import { playSound } from "~/audio";
 import "~/index.scss";
-import "./welcome.css";
 import therynLogo from "./theryn-ai-logo.png";
+import "./welcome.css";
 
 export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {
 	const navigate = useNavigate();
+	
+	if (typeof window !== 'undefined') playSound("background");
+
+	// console.log(window);
 
 	useEffect(() => {
 		if (!accountInfo) navigate("/login", { replace: true });
