@@ -125,7 +125,7 @@ export async function generateNameForJournalEntry(env: Env, contents: string[]):
 		model: "gpt-4o",
 		messages: [
 			...JOURNAL_QUESTIONS.map((q, i) => ({ role: "user", content: q + "\n" + (contents[i] ?? "") } as ChatCompletionMessageParam)),
-			{ role: "system", content: "What should we name this journal entry? Reply with just the name" }
+			{ role: "system", content: "What should we name this journal entry? Reply with just the name. Make it very specific to the entries; not something generic like 'The ___ Chronicles'. Still just a few words." }
 		]
 	});
 
