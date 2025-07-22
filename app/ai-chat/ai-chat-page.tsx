@@ -93,6 +93,7 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 	const [isLoading, setIsLoading] = useState(false);
 	const [previousMessageCount, setPreviousMessageCount] = useState(0);
 	const navigate = useNavigate();
+	const [sayonaraMode, setSayonaraMode] = useState(false);
 
 	useEffect(() => {
 		const newMessages = conversation ?? [];
@@ -108,11 +109,30 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 	if (hasBadConversationReference) return <></>;
 
+	useEffect(() => {
+		if (localStorage.getItem("sayonaraMode") === "true") {
+		setSayonaraMode(true);
+		}
+	}, []);
+
+	const triggersSayonara = (text: string) => {
+		return (
+		/sayonara/i.test(text) &&
+		/(play|!playSound|music|song|listen|hear|start)/i.test(text)
+		);
+	};
+
 	const handleSend = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!input.trim()) return;
 
 		const userMessage: ChatCompletionMessageParam = { role: "user", content: input.trim() };
+
+		// 🔴 Check for "sayonara" trigger
+		if (/sayonara/i.test(input)) {
+			setSayonaraMode(true);
+			localStorage.setItem("sayonaraMode", "true");
+		}
 
 		setMessages((prev) => [...prev, userMessage]);
 		setInput("");
@@ -168,7 +188,19 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 	return (
 		<CssVarsProvider theme={CURRENT_JOY_THEME}>
-			<Sheet id="root" sx={{ height: "100vh", display: "flex", flexDirection: "column", boxSizing: "border-box", background: CURRENT_THEME.colors.primaryBackground, padding: `${INSET}px`, gap: `${INSET / 2}px` }}>
+			<Sheet
+				id="root"
+				className={sayonaraMode ? "sayonara-mode" : ""}
+				sx={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					boxSizing: "border-box",
+					background: CURRENT_THEME.colors.primaryBackground,
+					padding: `${INSET}px`,
+					gap: `${INSET / 2}px`
+				}}
+			>
 				<Box sx={{ all: 'unset', display: "flex" }}>
 					<Button
 						color='danger'
