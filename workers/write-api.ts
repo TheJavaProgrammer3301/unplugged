@@ -345,7 +345,7 @@ export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
 	} else {
 		const timeDiff = now - lastLoggedOn;
 		const oneDayMs = 24 * 60 * 60 * 1000;
-		
+
 		if (timeDiff < oneDayMs) {
 			// Has been <24h since last log on - don't update
 			return;
@@ -386,7 +386,7 @@ export async function saveQuote(env: Env, userId: string, quote: string): Promis
 	const savedQuotes: string[] = user.savedQuotes ? JSON.parse(user.savedQuotes as string) : [];
 	if (savedQuotes.includes(quote)) return new Response("Quote already saved", { status: 409 });
 
-	if (user.diamonds < 10) return new Response("Not enough gems", { status: 402 });
+	if ((user as { diamonds: number }).diamonds < 10) return new Response("Not enough gems", { status: 402 });
 
 	savedQuotes.push(quote);
 	const updatedSavedQuotes = JSON.stringify(savedQuotes);
