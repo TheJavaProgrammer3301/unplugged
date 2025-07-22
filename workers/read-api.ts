@@ -7,7 +7,8 @@ function sanitizeUserData(user: any): SanitizedUserData {
 		email: user.email,
 		coins: user.coins,
 		diamonds: user.diamonds,
-		streak: user.streak
+		streak: user.streak,
+		savedQuotes: JSON.parse(user.savedQuotes ?? "[]") as string[]
 	};
 }
 
@@ -18,6 +19,7 @@ export type SanitizedUserData = {
 	coins: number;
 	diamonds: number;
 	streak: number;
+	savedQuotes: string[];
 }
 
 export type JournalEntry = {

@@ -375,3 +375,26 @@ export async function resetDailyRoutineItemCompletionStatesIfNecessary(env: Env,
 		await env.DB.prepare('UPDATE routineItems SET completed = 0 WHERE user = ?').bind(userId).run();
 	}
 }
+
+// savedQuotes is a column in users table
+// decrement user gems by 10, and add the quote to savedQuotes. only do this if quote isnt already present in savedQuotes
+export async function saveQuote(env: Env, userId: string, quote: string): Promise<Response> {
+	const user = await env.DB.prepare('SELECT savedQuotes, diamonds FROM users WHERE id = ?').bind(userId).first();
+
+	if (!user) return new Response("User not found", { status: 404 });
+
+	const savedQuotes: string[] = user.savedQuotes ? JSON.parse(user.savedQuotes as string) : [];
+	if (savedQuotes.includes(quote)) return new Response("Quote already saved", { status: 409 });
+
+	if (user.diamonds < 10) return new Response("Not enough gems", { status: 402 });
+
+	savedQuotes.push(quote);
+	const updatedSavedQuotes = JSON.stringify(savedQuotes);
+
+	const statement = env.DB.prepare('UPDATE users SET savedQuotes = ?, diamonds = diamonds - 10 WHERE id = ?')
+		.bind(updatedSavedQuotes, userId);
+
+	await statement.run();
+
+	return new Response(null, { status: 204 });
+}
