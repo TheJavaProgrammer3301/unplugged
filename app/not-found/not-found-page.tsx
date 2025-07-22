@@ -1,7 +1,24 @@
-export function NotFoundPage() {
-	return <main>
-		<h1>Page Not Found</h1>
-		<p>Sorry, the page you are looking for does not exist.</p>
-		<p>Please check the URL or return to the <a href="/">home page</a>.</p>
-	</main>
+import "~/index.scss";
+import "./not-found-page.css";
+
+export default function NotFoundPage() {
+  return (
+    <div className="app-wrapper">
+      <div className="phone-container notfound-container">
+        <h1 className="notfound-title">404</h1>
+        <p className="notfound-message">Oops! The page<br />you’re looking for<br />doesn’t exist.</p>
+        <div className="notfound-emoji" role="img" aria-label="confused face">
+          🤔
+        </div>
+        <button
+          className="back-button"
+          onClick={() => {
+            window.location.href = "/";
+          }}
+        >
+          Go Home
+        </button>
+      </div>
+    </div>
+  );
 }

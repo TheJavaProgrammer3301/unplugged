@@ -1,0 +1,33 @@
+.notfound-title {
+  font-size: 6rem;
+  font-weight: 900;
+  color: #ff416c;
+  text-shadow: 0 0 20px #ff4b2b;
+  margin: 0;
+  user-select: none;
+}
+
+.notfound-message {
+  font-size: 1.4rem;
+  margin: 1rem 0 2rem;
+  line-height: 1.4;
+  color: #e6e0ff;
+  text-shadow: 0 1px 4px rgba(75, 0, 130, 0.8);
+}
+
+.notfound-emoji {
+  font-size: 4rem;
+  margin-bottom: 3rem;
+  user-select: none;
+  filter: drop-shadow(0 0 8px #ff416c);
+  animation: pulse 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulse {
+  0% {
+    filter: drop-shadow(0 0 8px #ff416c);
+  }
+  100% {
+    filter: drop-shadow(0 0 20px #ff4b2b);
+  }
+}

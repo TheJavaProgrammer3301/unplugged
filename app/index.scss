@@ -1,0 +1,66 @@
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+	color: #e0e0e0;
+}
+
+.app-wrapper {
+	min-height: 100vh;
+	display: flex;
+	box-sizing: border-box;
+	align-items: center;
+	justify-content: center;
+	padding: 1rem;
+}
+
+.phone-container {
+	width: 320px;
+	height: 600px;
+	background: linear-gradient(145deg, #1a1a40, #4b0082, #6a00ff);
+	border-radius: 1.5rem;
+	box-shadow: 0 8px 40px rgba(106, 0, 255, 0.7);
+	padding: 2rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.25rem;
+	overflow: hidden;
+	box-sizing: border-box;
+	position: relative;
+	transition: all 0.3s ease;
+}
+
+@media (max-width: 480px) {
+	.phone-container {
+		width: 100vw;
+		height: 100vh;
+		border-radius: 0;
+		box-shadow: none;
+		padding: calc(env(safe-area-inset-top, 1rem) + 1rem) 1.5rem calc(env(safe-area-inset-bottom, 1rem) + 1rem);
+	}
+}
+
+.back-button {
+	background: #ff4d4f;
+	border: none;
+	color: white;
+	font-size: 0.85rem;
+	padding: 0.4rem 0.75rem;
+	border-radius: 9999px;
+	cursor: pointer;
+	box-shadow: 0 4px 10px rgba(255, 77, 79, 0.5);
+	transition: background 0.2s ease;
+}
+
+.back-button:hover {
+	background: #e04344;
+}

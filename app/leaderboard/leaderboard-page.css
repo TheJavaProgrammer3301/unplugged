@@ -1,0 +1,51 @@
+.leaderboard-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.leaderboard-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.leaderboard-item {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.leaderboard-item.you {
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid #ffd700;
+  color: #fffacd;
+  box-shadow: 0 0 12px #ffd700;
+}
+
+.rank {
+  font-size: 1rem;
+  color: #ffd700;
+  width: 2.5rem;
+}
+
+.name {
+  flex: 1;
+  text-align: left;
+}
+
+.streak {
+  color: #ffddcc;
+}

@@ -1,0 +1,122 @@
+.mind-bank {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1rem;
+}
+
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mind-title {
+  font-size: 1.2rem;
+  color: #f2f2f2;
+}
+
+.wheel-wrapper {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 1rem 0;
+}
+
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  transition: transform 3.5s cubic-bezier(0.33, 1, 0.68, 1);
+  background: conic-gradient(
+    #6a00ff 0% 12.5%,
+    #302b63 12.5% 25%,
+    #0f0c29 25% 37.5%,
+    #4b0082 37.5% 50%,
+    #6a00ff 50% 62.5%,
+    #302b63 62.5% 75%,
+    #0f0c29 75% 87.5%,
+    #4b0082 87.5% 100%
+  );
+  border: 4px solid #fff;
+}
+
+.wheel-slice {
+  position: absolute;
+  width: 50%;
+  height: 2px;
+  background: #ffffffaa;
+  top: 50%;
+  left: 50%;
+  transform-origin: left;
+}
+
+.wheel-arrow {
+  position: absolute;
+  top: -16px;
+  left: 52%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: #fff;
+}
+
+.spin-button {
+  background: linear-gradient(90deg, #6a00ff, #302b63);
+  border: none;
+  padding: 0.75rem 1rem;
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s;
+}
+
+.spin-button:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+.challenge-box {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
+  border-radius: 1rem;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.challenge-box h2 {
+  margin-bottom: 0.5rem;
+}
+
+.countdown-text {
+  text-align: center;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.complete-button {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.complete-button:disabled {
+  background: #444;
+  opacity: 0.6;
+  cursor: not-allowed;
+}

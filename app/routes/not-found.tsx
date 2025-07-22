@@ -1,4 +1,4 @@
-import { NotFoundPage } from "~/not-found/not-found-page";
+import  NotFoundPage  from "~/not-found/not-found-page";
 import type { Route } from "./+types/not-found";
 
 export function meta({ }: Route.MetaArgs) {

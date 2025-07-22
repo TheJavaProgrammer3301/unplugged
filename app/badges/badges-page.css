@@ -1,0 +1,69 @@
+.badges-page {
+  width: 82%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.mind-title {
+  font-size: 1rem;
+  color: #fff;
+  font-weight: bold;
+}
+
+.badge-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: none;
+}
+.badge-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.badge-card {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 90px;
+  box-shadow: 0 2px 4px rgba(255, 255, 255, 0.08);
+  font-size: 0.75rem;
+}
+
+.badge-card.locked {
+  opacity: 0.35;
+  filter: grayscale(100%);
+}
+
+.badge-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.badge-text h3 {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.badge-text p {
+  font-size: 0.65rem;
+  margin: 0.25rem 0 0;
+  color: #ccc;
+  text-align: center;
+}

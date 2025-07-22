@@ -1,0 +1,59 @@
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.page-title {
+  flex: 1;
+  text-align: center;
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+section {
+  margin-bottom: 1.5rem;
+}
+
+.challenge-completion h2,
+.ai-talks h2,
+.journal-entries h2 {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.days-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.day-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #444468;
+  color: #bbb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: default;
+  user-select: none;
+  box-shadow: 0 0 3px #0005 inset;
+  transition: background 0.3s, color 0.3s;
+}
+
+.day-circle.completed {
+  background: #6a00ff;
+  color: white;
+  box-shadow: 0 0 8px #6a00ff;
+}
+
+.stat-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  text-align: center;
+  color: #6a00ff;
+  user-select: none;
+}
