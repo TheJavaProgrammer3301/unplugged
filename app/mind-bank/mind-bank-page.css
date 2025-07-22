@@ -101,3 +101,22 @@
   font-size: 14px;
   color: #666;
 }
+
+.complete-button {
+  margin-top: 12px;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: white;
+  border: none;
+  padding: 10px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  width: 100%;
+  transition: 0.2s;
+}
+
+.complete-button:disabled {
+  background: #444;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
