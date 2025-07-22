@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, sendMessageToConversation, setDailyChallenge, setNameOfConversation, tryUpdateStreak, updateDailyChallenge, updateDailyRoutineItem } from "./write-api";
+import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, saveQuote, sendMessageToConversation, setDailyChallenge, setNameOfConversation, tryUpdateStreak, updateDailyChallenge, updateDailyRoutineItem } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -50,8 +50,6 @@ router.post(`${BACKEND_PREFIX}/conversations`, async (request) => {
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	if (!body.startMessage) {
@@ -73,8 +71,6 @@ router.post(`${BACKEND_PREFIX}/conversations/:conversationId/messages`, async (r
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	if (!body.message) {
@@ -90,8 +86,6 @@ router.post(`${BACKEND_PREFIX}/journals`, async (request) => {
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	if (!body.contents || !Array.isArray(body.contents)) {
@@ -106,8 +100,6 @@ router.post(`${BACKEND_PREFIX}/daily-routine`, async (request) => {
 
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
-
-	// if (userId) await tryUpdateStreak(request.env, userId);
 
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
@@ -125,8 +117,6 @@ router.put(`${BACKEND_PREFIX}/daily-routine/:itemId`, async (request) => {
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	if (typeof body.completed !== "boolean") {
@@ -142,8 +132,6 @@ router.delete(`${BACKEND_PREFIX}/daily-routine/:itemId`, async (request) => {
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	return await deleteDailyRoutineItem(request.env, userId, itemId);
@@ -154,8 +142,6 @@ router.post(`${BACKEND_PREFIX}/challenge`, async (request) => {
 
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
-
-	// if (userId) await tryUpdateStreak(request.env, userId);
 
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
@@ -172,8 +158,6 @@ router.put(`${BACKEND_PREFIX}/challenge`, async (request) => {
 	const sessionId = getSessionIdFromRequest(request.req.raw);
 	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
 
-	// if (userId) await tryUpdateStreak(request.env, userId);
-
 	if (!userId) return new Response("Unauthorized", { status: 401 });
 
 	if (!body.completed) {
@@ -181,6 +165,21 @@ router.put(`${BACKEND_PREFIX}/challenge`, async (request) => {
 	}
 
 	return await updateDailyChallenge(request.env, userId, body.completed);
+});
+
+router.post(`${BACKEND_PREFIX}/quotes`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	if (!body.quote) {
+		return new Response("Missing quote", { status: 400 });
+	}
+
+	return await saveQuote(request.env, userId, body.quote);
 });
 
 export const MAIN_ROUTER = router;
