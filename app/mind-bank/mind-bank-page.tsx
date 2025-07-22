@@ -1,143 +1,161 @@
+// ...imports
 import { useEffect, useState } from "react";
 import type { Challenge } from "workers/read-api";
 import "~/index.scss";
 import "./mind-bank-page.css";
 
 const challenges = [
-	"No phone for 24 hours<br>Your streak will be saved",
-	"Write in your journal",
-	"Take a long walk",
-	"Practice gratitude",
-	"Do a digital detox",
-	"Compliment 3 people",
-	"Meditate for 10 minutes",
-	"Drink only water today",
+  "No phone for 24 hours<br>Your streak will be saved",
+  "Write in your journal",
+  "Take a long walk",
+  "Practice gratitude",
+  "Do a digital detox",
+  "Compliment 3 people",
+  "Meditate for 10 minutes",
+  "Drink only water today",
 ];
 
 const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) => {
-	const [rotation, setRotation] = useState(0);
-	const [isSpinning, setIsSpinning] = useState(false);
-	const [selectedChallenge, setSelectedChallenge] = useState(dailyChallenge?.challenge ?? "");
-	const [canSpin, setCanSpin] = useState(true);
-	const [timeLeft, setTimeLeft] = useState("");
+  const [rotation, setRotation] = useState(0);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [selectedChallenge, setSelectedChallenge] = useState(dailyChallenge?.challenge ?? "");
+  const [canSpin, setCanSpin] = useState(true);
+  const [timeLeft, setTimeLeft] = useState("");
+  const [completed, setCompleted] = useState(false);
 
-	const anglePerSlice = 360 / challenges.length;
+  const anglePerSlice = 360 / challenges.length;
 
-	useEffect(() => {
-		// Load previously selected challenge
-		const saved = localStorage.getItem("selectedChallenge");
-		if (saved) {
-			setSelectedChallenge(saved);
-		}
+  useEffect(() => {
+    const saved = localStorage.getItem("selectedChallenge");
+    if (saved) {
+      setSelectedChallenge(saved);
+    }
 
-		// Handle spin cooldown
-		const lastSpin = dailyChallenge?.createdAt;
-		const now = Date.now();
+    const completeFlag = localStorage.getItem("challengeCompleted");
+    if (completeFlag === "true") setCompleted(true);
 
-		if (lastSpin && now - lastSpin < 24 * 60 * 60 * 1000) {
-			setCanSpin(false);
-			const nextSpinTime = lastSpin + 24 * 60 * 60 * 1000;
+    const lastSpin = dailyChallenge?.createdAt;
+    const now = Date.now();
 
-			const updateTimer = () => {
-				const diff = nextSpinTime - Date.now();
-				if (diff <= 0) {
-					setCanSpin(true);
-					setTimeLeft("");
-					return;
-				}
+    if (lastSpin && now - lastSpin < 24 * 60 * 60 * 1000) {
+      setCanSpin(false);
+      const nextSpinTime = lastSpin + 24 * 60 * 60 * 1000;
 
-				const hours = Math.floor(diff / (1000 * 60 * 60));
-				const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-				const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      const updateTimer = () => {
+        const diff = nextSpinTime - Date.now();
+        if (diff <= 0) {
+          setCanSpin(true);
+          setTimeLeft("");
+          return;
+        }
 
-				setTimeLeft(
-					`${hours.toString().padStart(2, "0")}:${minutes
-						.toString()
-						.padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-				);
-			};
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-			updateTimer();
-			const interval = setInterval(updateTimer, 1000);
-			return () => clearInterval(interval);
-		}
-	}, [dailyChallenge]);
+        setTimeLeft(`${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`);
+      };
 
-	const spinWheel = () => {
-		if (!canSpin || isSpinning) return;
+      updateTimer();
+      const interval = setInterval(updateTimer, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [dailyChallenge]);
 
-		setIsSpinning(true);
-		const randomSlice = Math.floor(Math.random() * challenges.length);
-		const fullSpins = 5;
-		const finalAngle = fullSpins * 360 + randomSlice * anglePerSlice + Math.random() * anglePerSlice;
+  const spinWheel = () => {
+    if (!canSpin || isSpinning) return;
 
-		setRotation(finalAngle);
+    setIsSpinning(true);
+    const randomSlice = Math.floor(Math.random() * challenges.length);
+    const fullSpins = 5;
+    const finalAngle = fullSpins * 360 + randomSlice * anglePerSlice + Math.random() * anglePerSlice;
 
-		setTimeout(async () => {
-			const challenge = challenges[randomSlice];
-			setSelectedChallenge(challenge);
-			localStorage.setItem("selectedChallenge", challenge);
-			setIsSpinning(false);
+    setRotation(finalAngle);
 
-			await fetch("/api/challenge", {
-				method: "POST",
-				body: JSON.stringify({ challenge }),
-				headers: {
-					"Content-Type": "application/json"
-				}
-			});
+    setTimeout(async () => {
+      const challenge = challenges[randomSlice];
+      setSelectedChallenge(challenge);
+      setCompleted(false);
+      localStorage.setItem("selectedChallenge", challenge);
+      localStorage.setItem("challengeCompleted", "false");
+      setIsSpinning(false);
 
-			localStorage.setItem("lastSpinDate", new Date().toDateString());
-			setCanSpin(false);
-			setRotation(fullSpins * 360 + randomSlice * anglePerSlice + anglePerSlice / 2);
-		}, 3500);
-	};
+      await fetch("/api/challenge", {
+        method: "POST",
+        body: JSON.stringify({ challenge }),
+        headers: { "Content-Type": "application/json" },
+      });
 
-	return (
-		<div className="app-wrapper">
-			<div className="phone-container mind-bank">
-				<div className="top-bar">
-					<div className="back-button-container">
-						<button className="back-button" onClick={() => window.history.back()}>
-							← Back
-						</button>
-					</div>
-					<h1 className="mind-title">Mind Bank</h1>
-				</div>
+      localStorage.setItem("lastSpinDate", new Date().toDateString());
+      setCanSpin(false);
+      setRotation(fullSpins * 360 + randomSlice * anglePerSlice + anglePerSlice / 2);
+    }, 3500);
+  };
 
-				<div className="wheel-wrapper">
-					<div
-						className={`wheel ${isSpinning ? "spinning" : ""}`}
-						style={{ transform: `rotate(${rotation}deg)` }}
-					>
-						{challenges.map((_, index) => (
-							<div
-								key={index}
-								className="wheel-slice"
-								style={{ transform: `rotate(${index * anglePerSlice}deg)` }}
-							/>
-						))}
-					</div>
-					<div className="wheel-arrow">▼</div>
-				</div>
+  const markComplete = async () => {
+    if (!selectedChallenge || completed) return;
 
-				<button className="spin-button" onClick={spinWheel} disabled={!canSpin}>
-					{canSpin ? "Spin for Challenge" : `Next spin in ${timeLeft}`}
-				</button>
+    await fetch("/api/challenge/complete", {
+      method: "POST",
+      body: JSON.stringify({ challenge: selectedChallenge }),
+      headers: { "Content-Type": "application/json" },
+    });
 
-				<div className="challenge-box">
-					<h2>Challenge</h2>
-					<p
-						dangerouslySetInnerHTML={{
-							__html:
-								selectedChallenge ||
-								"Spin the wheel to receive a challenge!",
-						}}
-					/>
-				</div>
-			</div>
-		</div>
-	);
+    setCompleted(true);
+    localStorage.setItem("challengeCompleted", "true");
+  };
+
+  return (
+    <div className="app-wrapper">
+      <div className="phone-container mind-bank">
+        <div className="top-bar">
+          <div className="back-button-container">
+            <button className="back-button" onClick={() => window.history.back()}>← Back</button>
+          </div>
+          <h1 className="mind-title">Mind Bank</h1>
+        </div>
+
+        <div className="wheel-wrapper">
+          <div
+            className={`wheel ${isSpinning ? "spinning" : ""}`}
+            style={{ transform: `rotate(${rotation}deg)` }}
+          >
+            {challenges.map((_, index) => (
+              <div
+                key={index}
+                className="wheel-slice"
+                style={{ transform: `rotate(${index * anglePerSlice}deg)` }}
+              />
+            ))}
+          </div>
+          <div className="wheel-arrow">▼</div>
+        </div>
+
+        <button className="spin-button" onClick={spinWheel} disabled={!canSpin}>
+          {canSpin ? "Spin for Challenge" : `Next spin in ${timeLeft}`}
+        </button>
+
+        <div className="challenge-box">
+          <h2>Challenge</h2>
+          <p
+            dangerouslySetInnerHTML={{
+              __html: selectedChallenge || "Spin the wheel to receive a challenge!",
+            }}
+          />
+        </div>
+
+        {selectedChallenge && (
+          <button
+            className="complete-button"
+            onClick={markComplete}
+            disabled={completed}
+          >
+            {completed ? "Challenge Completed!" : "I completed the challenge"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default MindBankPage;
