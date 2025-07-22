@@ -35,10 +35,10 @@ export default function ProfilePage({ accountInfo }: { accountInfo: SanitizedUse
 
 				<div className="profile-info">
 					<p><strong>Name:</strong> {accountInfo.name}</p>
-					<p><strong>Username:</strong> @{accountInfo.name}</p>
+					<p><strong>Username:</strong> @{accountInfo.username}</p>
 					<p><strong>Email:</strong> {accountInfo.email}</p>
-					<p><strong>Joined:</strong> {accountInfo.email}</p>
-					<p><strong>Bio:</strong> {accountInfo.email}</p>
+					<p><strong>Joined:</strong> {new Date(accountInfo.createdAt).toLocaleDateString()}</p>
+					<p><strong>Bio:</strong> {accountInfo.bio}</p>
 				</div>
 
 				<button className="edit-profile-button">Edit Profile</button>

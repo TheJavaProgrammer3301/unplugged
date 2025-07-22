@@ -4,6 +4,7 @@ function sanitizeUserData(user: any): SanitizedUserData {
 	return {
 		id: user.id,
 		name: user.name,
+		username: user.username, // Assuming username is the same as name for now
 		email: user.email,
 		coins: user.coins,
 		diamonds: user.diamonds,
@@ -23,7 +24,8 @@ export type SanitizedUserData = {
 	streak: number;
 	savedQuotes: string[];
 	createdAt: number;
-	bio: string
+	bio: string;
+	username: string
 }
 
 export type JournalEntry = {
