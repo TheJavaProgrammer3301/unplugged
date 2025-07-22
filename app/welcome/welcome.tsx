@@ -14,7 +14,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 	// console.log(window);
 
 	useEffect(() => {
-		if (!accountInfo) navigate("/login", { replace: true });
+		if (!accountInfo) navigate("/", { replace: true });
 	}, [accountInfo]);
 
 	if (!accountInfo) return <></>;

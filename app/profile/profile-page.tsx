@@ -8,7 +8,7 @@ export default function ProfilePage({ accountInfo }: { accountInfo: SanitizedUse
 	const navigate = useNavigate();
 
 	useEffect(() => {
-		if (!accountInfo) navigate("/login", { replace: true });
+		if (!accountInfo) navigate("/", { replace: true });
 	}, [accountInfo]);
 
 	if (!accountInfo) return <></>;
