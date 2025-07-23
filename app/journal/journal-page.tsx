@@ -1,9 +1,14 @@
-import { Snackbar } from "@mui/joy";
-import React, { useEffect, useState } from "react";
+import { ArrowBack } from '@mui/icons-material';
+import { Box, Button, Divider, FormControl, FormLabel, Sheet, Snackbar, Stack, Textarea, Typography } from "@mui/joy";
+import { CssVarsProvider } from '@mui/joy/styles';
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { JournalEntry } from "workers/read-api";
-import "~/index.scss";
+import "~/mui/index.scss";
+import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./journal-page.css";
+
+const INSET = 32;
 
 export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 	const navigate = useNavigate();
@@ -19,12 +24,8 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 		}
 	}, [entry]);
 
-
-	const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+	const handleChange = (index: number, value: string) => {
 		if (entry) return; // prevent editing if entry is pre-filled
-		const { name, value } = e.target;
-		const index = parseInt(name, 10);
-		if (isNaN(index) || index < 0 || index >= entries.length) return;
 		const newEntries = [...entries];
 		newEntries[index] = value;
 		setEntries(newEntries);
@@ -59,70 +60,164 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 	};
 
 	return (
-		<div className="app-wrapper">
-			<div className="phone-container journal-container">
-				<div className="journal-header">
-					<button className="back-button" onClick={() => navigate("/dashboard")}>
-						← Back
-					</button>
-					<h1>{entry ? entry.name : "My Journal"}</h1>
-				</div>
-
-				<div className="journal-section">
-					<label>How are you feeling today?</label>
-					<textarea
-						name="0"
-						value={entries[0]}
-						onChange={handleChange}
-						rows={3}
-						disabled={!!entry}
-					/>
-				</div>
-
-				<div className="journal-section">
-					<label>What happened today?</label>
-					<textarea
-						name="1"
-						value={entries[1]}
-						onChange={handleChange}
-						rows={4}
-						disabled={!!entry}
-					/>
-				</div>
-
-				<div className="journal-section">
-					<label>What's one goal for tomorrow?</label>
-					<textarea
-						name="2"
-						value={entries[2]}
-						onChange={handleChange}
-						rows={2}
-						disabled={!!entry}
-					/>
-				</div>
-
-				{!entry && (
-					<button className="journal-save" onClick={handleSave}>
-						Save Entry
-					</button>
-				)}
-
-				<button className="journal-previous" onClick={() => navigate("/journal-entries")}>
-					Previous Entries
-				</button>
-			</div>
-
-			{badge !== "" && <Snackbar
-				open={badge !== ""}
-				// onClose={() => setCompleted(false)}
-				autoHideDuration={3000}
-				variant="soft"
-				anchorOrigin={{ vertical: "top", horizontal: "center" }}
-				color="success"
-				className="challenge-complete-snackbar"
+		<CssVarsProvider theme={CURRENT_JOY_THEME}>
+			<Sheet
+				sx={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					boxSizing: "border-box",
+					background: CURRENT_THEME.colors.primaryBackground,
+					padding: `${INSET}px`,
+					gap: `${INSET / 2}px`,
+					overflowY: "auto"
+				}}
+				id="root"
 			>
-				Badge complete: {badge}
-			</Snackbar>}
-		</div>
+				<Box sx={{ display: "flex", alignItems: "center" }}>
+					<Button
+						color='danger'
+						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+						onClick={() => navigate("/dashboard")}
+					>
+						<ArrowBack />
+						<Typography sx={{ color: "white" }}>Back</Typography>
+					</Button>
+					<Box sx={{ flexGrow: 1 }} />
+					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+						{entry ? entry.name : "My Journal"}
+					</Typography>
+				</Box>
+				<Divider />
+
+				<Stack spacing={3} sx={{ flexGrow: 1 }}>
+					<FormControl>
+						<FormLabel sx={{ color: "white", fontWeight: "600", marginBottom: "8px" }}>
+							How are you feeling today?
+						</FormLabel>
+						<Textarea
+							value={entries[0]}
+							onChange={(e) => handleChange(0, e.target.value)}
+							minRows={3}
+							maxRows={6}
+							disabled={!!entry}
+							sx={{
+								backgroundColor: "rgba(255, 255, 255, 0.08)",
+								borderColor: "rgba(255, 255, 255, 0.2)",
+								color: "#e0e0e0",
+								fontSize: "0.95rem",
+								borderRadius: "10px",
+								boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)",
+								'&:focus-within': {
+									borderColor: "rgba(255, 255, 255, 0.4)"
+								}
+							}}
+							placeholder={entry ? "" : "Share your feelings..."}
+						/>
+					</FormControl>
+
+					<FormControl>
+						<FormLabel sx={{ color: "white", fontWeight: "600", marginBottom: "8px" }}>
+							What happened today?
+						</FormLabel>
+						<Textarea
+							value={entries[1]}
+							onChange={(e) => handleChange(1, e.target.value)}
+							minRows={4}
+							maxRows={8}
+							disabled={!!entry}
+							sx={{
+								backgroundColor: "rgba(255, 255, 255, 0.08)",
+								borderColor: "rgba(255, 255, 255, 0.2)",
+								color: "#e0e0e0",
+								fontSize: "0.95rem",
+								borderRadius: "10px",
+								boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)",
+								'&:focus-within': {
+									borderColor: "rgba(255, 255, 255, 0.4)"
+								}
+							}}
+							placeholder={entry ? "" : "Tell us about your day..."}
+						/>
+					</FormControl>
+
+					<FormControl>
+						<FormLabel sx={{ color: "white", fontWeight: "600", marginBottom: "8px" }}>
+							What's one goal for tomorrow?
+						</FormLabel>
+						<Textarea
+							value={entries[2]}
+							onChange={(e) => handleChange(2, e.target.value)}
+							minRows={2}
+							maxRows={4}
+							disabled={!!entry}
+							sx={{
+								backgroundColor: "rgba(255, 255, 255, 0.08)",
+								borderColor: "rgba(255, 255, 255, 0.2)",
+								color: "#e0e0e0",
+								fontSize: "0.95rem",
+								borderRadius: "10px",
+								boxShadow: "0 1px 4px rgba(0, 0, 0, 0.2)",
+								'&:focus-within': {
+									borderColor: "rgba(255, 255, 255, 0.4)"
+								}
+							}}
+							placeholder={entry ? "" : "Set a goal for tomorrow..."}
+						/>
+					</FormControl>
+				</Stack>
+
+				<Stack spacing={2} sx={{ marginTop: "auto" }}>
+					{!entry && (
+						<Button
+							onClick={handleSave}
+							sx={{
+								background: "linear-gradient(to right, #00c9ff, #92fe9d)",
+								color: "#1a1a1a",
+								fontWeight: "bold",
+								padding: "12px",
+								borderRadius: "10px",
+								fontSize: "0.95rem",
+								'&:hover': {
+									background: "linear-gradient(to right, #92fe9d, #00c9ff)",
+									transform: "scale(1.02)"
+								}
+							}}
+						>
+							Save Entry
+						</Button>
+					)}
+
+					<Button
+						onClick={() => navigate("/journal-entries")}
+						sx={{
+							background: "linear-gradient(135deg, #00c6ff, #0072ff)",
+							color: "white",
+							fontWeight: "bold",
+							padding: "12px",
+							borderRadius: "10px",
+							fontSize: "0.95rem",
+							'&:hover': {
+								background: "linear-gradient(135deg, #0072ff, #00c6ff)",
+								transform: "scale(1.02)"
+							}
+						}}
+					>
+						Previous Entries
+					</Button>
+				</Stack>
+
+				<Snackbar
+					open={badge !== ""}
+					autoHideDuration={3000}
+					variant="soft"
+					anchorOrigin={{ vertical: "top", horizontal: "center" }}
+					color="success"
+					onClose={() => setBadge("")}
+				>
+					Badge complete: {badge}
+				</Snackbar>
+			</Sheet>
+		</CssVarsProvider>
 	);
 }

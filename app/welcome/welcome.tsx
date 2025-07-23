@@ -415,6 +415,7 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 								width: "auto",
 								aspectRatio: "2.25 / 1",
 								borderRadius: 0,
+								background: "none",
 								filter: "drop-shadow(0 0 3px rgba(255, 65, 108, 0.8))"
 							}}
 						/>

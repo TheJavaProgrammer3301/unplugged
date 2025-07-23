@@ -7,13 +7,13 @@ export function getSessionId() {
 		?.split("=")[1];
 }
 
-export async function tryLogIn(email: string, password: string) {
+export async function tryLogIn(identifier: string, password: string, loginType: string) {
 	const response = await fetch("/api/create-session", {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json"
 		},
-		body: JSON.stringify({ email, password })
+		body: JSON.stringify({ [loginType]: identifier, password })
 	});
 
 	const body = await response.text();

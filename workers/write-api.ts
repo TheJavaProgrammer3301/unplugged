@@ -8,7 +8,7 @@ import { getLastLoggedOnTime } from './utils';
 const JOURNAL_QUESTIONS = ["How are you feeling today?", "What happened today?", "What's one goal for tomorrow?"];
 
 //#region utility
-export async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string) {
+export async function addMessageToConversation(env: Env, conversation: ChatCompletionMessageParam[], conversationId: string, input: string, userId: string) {
 	const newMessages: ChatCompletionMessageParam[] = [{ role: "user", content: input }];
 
 	const client = new OpenAI({
@@ -34,6 +34,17 @@ export async function addMessageToConversation(env: Env, conversation: ChatCompl
 		.prepare('UPDATE conversations SET content = ?, lastUpdatedAt = ? WHERE id = ?')
 		.bind(JSON.stringify(finalConversation), Date.now(), conversationId);
 	await statement.run();
+
+	if (input.toLowerCase().includes("goon")) {
+		const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+		const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+
+		if (!currentBadges.includes("Goonsplosion")) {
+			currentBadges.push("Goonsplosion");
+			await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
+				.bind(JSON.stringify(currentBadges), userId).run();
+		}
+	}
 
 	return finalConversation;
 }
@@ -153,8 +164,8 @@ export async function createAccount(env: Env, email: string, name: string, passw
 	if (count && count > 0) return new Response("Account with that email already exists", { status: 409 });
 
 	const statement = env.DB
-		.prepare('INSERT INTO users (id, name, email, password, username) VALUES (?, ?, ?, ?, ?)')
-		.bind(id, name, email, password, username);
+		.prepare('INSERT INTO users (id, name, email, password, username, createdAt) VALUES (?, ?, ?, ?, ?, ?)')
+		.bind(id, name, email, password, username, Date.now());
 
 	try {
 		await statement.run();
@@ -207,7 +218,7 @@ export async function createConversation(env: Env, userId: string): Promise<[str
 	if (totalConversations === 5) {
 		const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
 		const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
-		
+
 		if (!currentBadges.includes("Chatty Fella")) {
 			currentBadges.push("Chatty Fella");
 			await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
@@ -239,14 +250,14 @@ export async function sendMessageToConversation(env: Env, conversationId: string
 
 	try {
 		const conversation = JSON.parse(result.content as string) as ChatCompletionMessageParam[];
-		const finalConversation = await addMessageToConversation(env, conversation, conversationId, input);
+		const finalConversation = await addMessageToConversation(env, conversation, conversationId, input, result.user as string);
 
 		// Check if input contains "goon" and add badge
 		if (input.toLowerCase().includes("goon")) {
 			const userId = result.user as string;
 			const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
 			const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
-			
+
 			if (!currentBadges.includes("Goonsplosion")) {
 				currentBadges.push("Goonsplosion");
 				await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
@@ -284,7 +295,7 @@ export async function createJournalEntry(env: Env, userId: string, contents: str
 		if (totalJournalEntries === 5) {
 			const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
 			const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
-			
+
 			if (!currentBadges.includes("Congressional Hearing")) {
 				currentBadges.push("Congressional Hearing");
 				await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
@@ -312,10 +323,10 @@ export async function createAccountAndLogIn(env: Env, email: string, name: strin
 	return createSession(env, userId);
 }
 
-export async function logIn(env: Env, email: string, password: string): Promise<Response> {
-	const user = await env.DB.prepare('SELECT * FROM users WHERE email = ? AND password = ?').bind(email, password).first();
+export async function logIn(env: Env, identifier: string, password: string, loginType: "email" | "username"): Promise<Response> {
+	const user = await env.DB.prepare(`SELECT * FROM users WHERE ${loginType} = ? AND password = ?`).bind(identifier, password).first();
 
-	if (!user) return new Response("Invalid email or password", { status: 401 });
+	if (!user) return new Response("Invalid email/username or password", { status: 401 });
 
 	return createSession(env, user.id as string);
 }
@@ -372,7 +383,7 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 				// Add "First Spin" badge
 				const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
 				const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
-				
+
 				if (!currentBadges.includes("First Spin")) {
 					currentBadges.push("First Spin");
 					await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
@@ -384,7 +395,7 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 				// Add "Obedient User" badge
 				const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
 				const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
-				
+
 				if (!currentBadges.includes("Obedient User")) {
 					currentBadges.push("Obedient User");
 					await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')

@@ -48,11 +48,11 @@ router.post(`${BACKEND_PREFIX}/create-account-and-session`, async (request) => {
 router.post(`${BACKEND_PREFIX}/create-session`, async (request) => {
 	const body = await request.req.json() as any;
 
-	if (!body.email || !body.password) {
-		return new Response("Missing email or password", { status: 400 });
+	if ((!body.email && !body.username) || !body.password) {
+		return new Response("Missing email/username or password", { status: 400 });
 	}
 
-	return logIn(request.env, body.email, body.password);
+	return logIn(request.env, body.email ?? body.username, body.password, "email" in body ? "email" : "username");
 });
 
 router.post(`${BACKEND_PREFIX}/conversations`, async (request) => {
@@ -68,7 +68,7 @@ router.post(`${BACKEND_PREFIX}/conversations`, async (request) => {
 	}
 
 	const [convoId, count] = await createConversation(request.env, userId);
-	const conversation = await addMessageToConversation(request.env, [], convoId, body.startMessage);
+	const conversation = await addMessageToConversation(request.env, [], convoId, body.startMessage, userId);
 
 	await setNameOfConversation(request.env, convoId, await generateNameForConversation(request.env, conversation));
 

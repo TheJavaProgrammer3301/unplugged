@@ -1,4 +1,5 @@
-import { Alert, Box, Button, FormControl, FormLabel, Input, Sheet, Stack, Typography } from "@mui/joy";
+import { InfoOutlined, Key } from "@mui/icons-material";
+import { Alert, Box, Button, FormControl, FormHelperText, FormLabel, Input, LinearProgress, Sheet, Stack, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
@@ -8,6 +9,75 @@ import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./signup-page.css";
 
 const INSET = 32;
+
+function FieldLabel({ label }: { label: string }) {
+	return <FormLabel sx={{ color: "white", fontWeight: "600" }}>{label}</FormLabel>;
+}
+
+function PasswordInput({ value, setValue }: { value: string; setValue: (value: string) => void }) {
+	const minLength = 12;
+
+	return <FormControl>
+		<FieldLabel label="Password" />
+		<Stack spacing={0.5} sx={{ '--hue': Math.min(value.length * 10, 120) }}>
+			<Input
+				type="password"
+				placeholder="Type in here…"
+				startDecorator={<Key />}
+				value={value}
+				onChange={(event) => setValue(event.target.value)}
+				required
+				sx={{
+					backgroundColor: CURRENT_THEME.colors.primaryBackground,
+					borderColor: "rgba(255, 255, 255, 0.3)",
+					color: "white"
+				}}
+			/>
+			<LinearProgress
+				determinate
+				size="sm"
+				value={Math.min((value.length * 100) / minLength, 100)}
+				sx={{ bgcolor: 'background.level3', color: 'hsl(var(--hue) 80% 40%)' }}
+			/>
+			<Typography
+				level="body-xs"
+				sx={{ alignSelf: 'flex-end', color: 'hsl(var(--hue) 80% 30%)' }}
+			>
+				{value.length < 3 && 'Very weak'}
+				{value.length >= 3 && value.length < 6 && 'Weak'}
+				{value.length >= 6 && value.length < 10 && 'Strong'}
+				{value.length >= 10 && 'Very strong'}
+			</Typography>
+		</Stack>
+	</FormControl>;
+}
+
+function VerifyPasswordInput({ password, value, setValue }: { password: string; value: string; setValue: (value: string) => void }) {
+	return <FormControl
+		error={password !== value}
+		sx={{
+			marginTop: "0 !important"
+		}}
+	>
+		<FieldLabel label="Verify Password" />
+		<Input
+			type="password"
+			placeholder="Verify your password"
+			value={value}
+			onChange={(event) => setValue(event.target.value)}
+			required
+			sx={{
+				backgroundColor: CURRENT_THEME.colors.primaryBackground,
+				borderColor: "rgba(255, 255, 255, 0.3)",
+				color: "white"
+			}}
+		/>
+		{password !== value && <FormHelperText>
+			<InfoOutlined />
+			Passwords do not match!
+		</FormHelperText>}
+	</FormControl>;
+}
 
 export default function SignupPage() {
 	const [email, setEmail] = useState("");
@@ -61,14 +131,14 @@ export default function SignupPage() {
 						alignItems: "center"
 					}}
 				>
-					<Typography 
-						level="h1" 
-						sx={{ 
-							fontSize: "1.8rem", 
-							fontWeight: "700", 
-							marginBottom: "32px", 
-							color: "#e6e0ff", 
-							textShadow: "0 1px 4px rgba(75, 0, 130, 0.8)" 
+					<Typography
+						level="h1"
+						sx={{
+							color: "white",
+							fontSize: "1.8rem",
+							fontWeight: "700",
+							marginBottom: "32px",
+							textShadow: "0 1px 4px rgba(75, 0, 130, 0.8)"
 						}}
 					>
 						Sign Up
@@ -81,7 +151,7 @@ export default function SignupPage() {
 						sx={{ width: "100%" }}
 					>
 						<FormControl>
-							<FormLabel sx={{ color: "#b3a1ff", fontWeight: "600" }}>Full Name</FormLabel>
+							<FieldLabel label="Full Name" />
 							<Input
 								type="text"
 								placeholder="Enter your full name"
@@ -89,25 +159,15 @@ export default function SignupPage() {
 								onChange={(e) => setFullName(e.target.value)}
 								required
 								sx={{
-									backgroundColor: "rgba(255, 255, 255, 0.1)",
-									border: "none",
-									borderRadius: "12px",
-									padding: "12px 16px",
-									fontSize: "1rem",
-									color: "#e0e0ff",
-									boxShadow: "0 2px 8px rgba(255, 255, 255, 0.15)",
-									'&::placeholder': {
-										color: "#b3a1ff"
-									},
-									'&:focus-within': {
-										boxShadow: "0 0 0 2px rgba(0, 198, 255, 0.5)"
-									}
+									backgroundColor: CURRENT_THEME.colors.primaryBackground,
+									borderColor: "rgba(255, 255, 255, 0.3)",
+									color: "white"
 								}}
 							/>
 						</FormControl>
 
 						<FormControl>
-							<FormLabel sx={{ color: "#b3a1ff", fontWeight: "600" }}>Username</FormLabel>
+							<FieldLabel label="Username" />
 							<Input
 								type="text"
 								placeholder="Choose a username"
@@ -115,25 +175,15 @@ export default function SignupPage() {
 								onChange={(e) => setUsername(e.target.value)}
 								required
 								sx={{
-									backgroundColor: "rgba(255, 255, 255, 0.1)",
-									border: "none",
-									borderRadius: "12px",
-									padding: "12px 16px",
-									fontSize: "1rem",
-									color: "#e0e0ff",
-									boxShadow: "0 2px 8px rgba(255, 255, 255, 0.15)",
-									'&::placeholder': {
-										color: "#b3a1ff"
-									},
-									'&:focus-within': {
-										boxShadow: "0 0 0 2px rgba(0, 198, 255, 0.5)"
-									}
+									backgroundColor: CURRENT_THEME.colors.primaryBackground,
+									borderColor: "rgba(255, 255, 255, 0.3)",
+									color: "white"
 								}}
 							/>
 						</FormControl>
 
 						<FormControl>
-							<FormLabel sx={{ color: "#b3a1ff", fontWeight: "600" }}>Email</FormLabel>
+							<FieldLabel label="Email" />
 							<Input
 								type="email"
 								placeholder="Enter your email"
@@ -141,74 +191,15 @@ export default function SignupPage() {
 								onChange={(e) => setEmail(e.target.value)}
 								required
 								sx={{
-									backgroundColor: "rgba(255, 255, 255, 0.1)",
-									border: "none",
-									borderRadius: "12px",
-									padding: "12px 16px",
-									fontSize: "1rem",
-									color: "#e0e0ff",
-									boxShadow: "0 2px 8px rgba(255, 255, 255, 0.15)",
-									'&::placeholder': {
-										color: "#b3a1ff"
-									},
-									'&:focus-within': {
-										boxShadow: "0 0 0 2px rgba(0, 198, 255, 0.5)"
-									}
+									backgroundColor: CURRENT_THEME.colors.primaryBackground,
+									borderColor: "rgba(255, 255, 255, 0.3)",
+									color: "white"
 								}}
 							/>
 						</FormControl>
-
-						<FormControl>
-							<FormLabel sx={{ color: "#b3a1ff", fontWeight: "600" }}>Password</FormLabel>
-							<Input
-								type="password"
-								placeholder="Create a password"
-								value={password}
-								onChange={(e) => setPassword(e.target.value)}
-								required
-								sx={{
-									backgroundColor: "rgba(255, 255, 255, 0.1)",
-									border: "none",
-									borderRadius: "12px",
-									padding: "12px 16px",
-									fontSize: "1rem",
-									color: "#e0e0ff",
-									boxShadow: "0 2px 8px rgba(255, 255, 255, 0.15)",
-									'&::placeholder': {
-										color: "#b3a1ff"
-									},
-									'&:focus-within': {
-										boxShadow: "0 0 0 2px rgba(0, 198, 255, 0.5)"
-									}
-								}}
-							/>
-						</FormControl>
-
-						<FormControl>
-							<FormLabel sx={{ color: "#b3a1ff", fontWeight: "600" }}>Verify Password</FormLabel>
-							<Input
-								type="password"
-								placeholder="Confirm your password"
-								value={verifyPassword}
-								onChange={(e) => setVerifyPassword(e.target.value)}
-								required
-								sx={{
-									backgroundColor: "rgba(255, 255, 255, 0.1)",
-									border: "none",
-									borderRadius: "12px",
-									padding: "12px 16px",
-									fontSize: "1rem",
-									color: "#e0e0ff",
-									boxShadow: "0 2px 8px rgba(255, 255, 255, 0.15)",
-									'&::placeholder': {
-										color: "#b3a1ff"
-									},
-									'&:focus-within': {
-										boxShadow: "0 0 0 2px rgba(0, 198, 255, 0.5)"
-									}
-								}}
-							/>
-						</FormControl>
+						
+						<PasswordInput value={password} setValue={setPassword} />
+						<VerifyPasswordInput password={password} value={verifyPassword} setValue={setVerifyPassword} />
 
 						{error && (
 							<Alert color="danger" sx={{ backgroundColor: "rgba(255, 0, 0, 0.1)", color: "#ffcccc" }}>
@@ -218,23 +209,7 @@ export default function SignupPage() {
 
 						<Button
 							type="submit"
-							sx={{
-								background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-								color: "#e0f7ff",
-								fontWeight: "700",
-								padding: "12px 16px",
-								borderRadius: "12px",
-								fontSize: "1rem",
-								textTransform: "uppercase",
-								letterSpacing: "0.07em",
-								boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
-								marginTop: "8px",
-								'&:hover': {
-									background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-									transform: "scale(1.05)",
-									boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)"
-								}
-							}}
+							size="lg"
 						>
 							Create Account
 						</Button>
