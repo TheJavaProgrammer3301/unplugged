@@ -50,6 +50,7 @@ export default function SignupPage() {
 					background: CURRENT_THEME.colors.primaryBackground,
 					padding: `${INSET}px`
 				}}
+				id="root"
 			>
 				<Box
 					sx={{
