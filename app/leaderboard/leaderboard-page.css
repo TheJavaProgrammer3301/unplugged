@@ -1,4 +1,4 @@
-.leaderboard-header {
+/* .leaderboard-header {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -48,4 +48,12 @@
 
 .streak {
   color: #ffddcc;
+} */
+
+#leaderboard-list::-webkit-scrollbar {
+	width: 0;
+}
+
+#leaderboard-list {
+	padding: 0 12px;
 }

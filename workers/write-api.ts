@@ -398,3 +398,16 @@ export async function saveQuote(env: Env, userId: string, quote: string): Promis
 
 	return new Response(null, { status: 204 });
 }
+
+export async function updateAccount(env: Env, userId: string, email: string, name: string, username: string): Promise<Response> {
+	const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(userId).first();
+
+	if (!user) return new Response("User not found", { status: 404 });
+
+	const statement = env.DB.prepare('UPDATE users SET email = ?, name = ?, username = ? WHERE id = ?')
+		.bind(email, name, username, userId);
+
+	await statement.run();
+
+	return new Response(null, { status: 204 });
+}

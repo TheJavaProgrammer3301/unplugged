@@ -1,6 +1,6 @@
 import { Router } from "@tsndr/cloudflare-worker-router";
 import { getSessionIdFromRequest, getUserIdFromSession } from "./utils";
-import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, saveQuote, sendMessageToConversation, setDailyChallenge, setNameOfConversation, tryUpdateStreak, updateDailyChallenge, updateDailyRoutineItem } from "./write-api";
+import { addDailyRoutineItem, addMessageToConversation, createAccount, createAccountAndLogIn, createConversation, createJournalEntry, deleteDailyRoutineItem, generateNameForConversation, logIn, saveQuote, sendMessageToConversation, setDailyChallenge, setNameOfConversation, tryUpdateStreak, updateAccount, updateDailyChallenge, updateDailyRoutineItem } from "./write-api";
 
 // worker will be used for writing data
 const BACKEND_PREFIX = "/api";
@@ -14,7 +14,7 @@ router.use(async (request) => {
 	if (userId) await tryUpdateStreak(request.env, userId);
 });
 
-router.post(`${BACKEND_PREFIX}/create-account`, async (request) => {
+router.post(`${BACKEND_PREFIX}/account`, async (request) => {
 	const body = await request.req.json() as any;
 
 	if (!body.name || !body.password || !body.email || !body.username) {
@@ -22,6 +22,17 @@ router.post(`${BACKEND_PREFIX}/create-account`, async (request) => {
 	}
 
 	return createAccount(request.env, body.email, body.name, body.password, body.username);
+});
+
+router.put(`${BACKEND_PREFIX}/account`, async (request) => {
+	const body = await request.req.json() as any;
+
+	const sessionId = getSessionIdFromRequest(request.req.raw);
+	const userId = sessionId !== null ? await getUserIdFromSession(request.env, sessionId) : null;
+
+	if (!userId) return new Response("Unauthorized", { status: 401 });
+
+	return updateAccount(request.env, userId, body.email, body.name, body.username);
 });
 
 router.post(`${BACKEND_PREFIX}/create-account-and-session`, async (request) => {
