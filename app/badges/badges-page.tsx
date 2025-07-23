@@ -6,14 +6,17 @@ interface Badge {
   description: string;
   icon: string; // use emojis or icons
   earned: boolean;
+  secret?: boolean;
 }
 
 const badges: Badge[] = [
-  { title: "First Spin", description: "Completed your first challenge", icon: "🎯", earned: true },
-  { title: "Hydrated Hero", description: "Drank only water for a day", icon: "💧", earned: false },
-  { title: "Mindful Master", description: "Meditated for 10 minutes", icon: "🧘", earned: true },
-  { title: "Social Star", description: "Complimented 3 people", icon: "🌟", earned: false },
-  { title: "Digital Detox", description: "No phone for 24h", icon: "📵", earned: true },
+  { title: "First Spin", description: "Completed your first challenge", icon: "🎯", earned: true, secret: false },
+  { title: "Good Boy", description: "Have a 30 day streak", icon: "💧", earned: false, secret: false },
+  { title: "Congressional Hearing", description: "Write 50 journal entries", icon: "🧘", earned: true, secret: false },
+  { title: "Obedient User", description: "Completed 20 challenges", icon: "🌟", earned: false, secret: false },
+  { title: "Chatty Fella", description: "Have 100 AI chats", icon: "📵", earned: true, secret: false },
+  { title: "Goonsplosion", description: "Mention gooning in a journal entry", icon: "", earned: false, secret: true },
+  { title: "Mystery Meatloaf", description: "Play 10,000 songs using Theryn", icon: "", earned: false, secret: true },
 ];
 
 export default function BadgesPage() {
@@ -30,18 +33,20 @@ export default function BadgesPage() {
         </div>
 
         <div className="badge-grid">
-          {badges.map((badge, i) => (
-            <div
-              key={i}
-              className={`badge-card ${badge.earned ? "earned" : "locked"}`}
-            >
-              <div className="badge-icon">{badge.icon}</div>
-              <div className="badge-text">
-                <h3>{badge.title}</h3>
-                <p>{badge.description}</p>
+          {badges
+            .filter(badge => !badge.secret || badge.earned)
+            .map((badge, i) => (
+              <div
+                key={i}
+                className={`badge-card ${badge.earned ? "earned" : "locked"}`}
+              >
+                <div className="badge-icon">{badge.icon}</div>
+                <div className="badge-text">
+                  <h3>{badge.title}</h3>
+                  <p>{badge.description}</p>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
     </div>
