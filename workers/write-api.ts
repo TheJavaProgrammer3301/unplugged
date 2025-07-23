@@ -210,7 +210,7 @@ export async function createConversation(env: Env, userId: string): Promise<[str
 		
 		if (!currentBadges.includes("Chatty Fella")) {
 			currentBadges.push("Chatty Fella");
-			await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+			await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
 				.bind(JSON.stringify(currentBadges), userId).run();
 		}
 	}
@@ -249,7 +249,7 @@ export async function sendMessageToConversation(env: Env, conversationId: string
 			
 			if (!currentBadges.includes("Goonsplosion")) {
 				currentBadges.push("Goonsplosion");
-				await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+				await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
 					.bind(JSON.stringify(currentBadges), userId).run();
 			}
 		}
@@ -287,7 +287,7 @@ export async function createJournalEntry(env: Env, userId: string, contents: str
 			
 			if (!currentBadges.includes("Congressional Hearing")) {
 				currentBadges.push("Congressional Hearing");
-				await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+				await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
 					.bind(JSON.stringify(currentBadges), userId).run();
 			}
 		}
@@ -375,7 +375,7 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 				
 				if (!currentBadges.includes("First Spin")) {
 					currentBadges.push("First Spin");
-					await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+					await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
 						.bind(JSON.stringify(currentBadges), userId).run();
 				}
 
@@ -387,7 +387,7 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 				
 				if (!currentBadges.includes("Obedient User")) {
 					currentBadges.push("Obedient User");
-					await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+					await env.DB.prepare('UPDATE users SET badges = ?, diamonds = diamonds + 50 WHERE id = ?')
 						.bind(JSON.stringify(currentBadges), userId).run();
 				}
 
