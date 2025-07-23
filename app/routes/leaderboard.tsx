@@ -10,16 +10,17 @@ export function meta({ }: Route.MetaArgs) {
 	];
 }
 
-export async function loader({ request, context }: Route.LoaderArgs) {
+export async function loader({ request, context, params }: Route.LoaderArgs) {
 	const sessionId = getSessionIdFromRequest(request);
 	const accountInfo = sessionId !== null ? await getAccountInfoFromSessionId(context.cloudflare.env, sessionId) : null;
 	
 	return {
 		leaderboard: await getStreakLeaderboard(context.cloudflare.env),
+		leaderboardType: (params as { type?: string }).type ?? "streak",
 		accountInfo
 	};
 }
 
 export default function Leaderboard({ loaderData }: Route.ComponentProps) {
-	return <LeaderboardPage leaderboard={loaderData.leaderboard} accountInfo={loaderData.accountInfo} />;
+	return <LeaderboardPage leaderboardType={loaderData.leaderboardType} leaderboard={loaderData.leaderboard} accountInfo={loaderData.accountInfo} />;
 }

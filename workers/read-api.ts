@@ -176,7 +176,7 @@ export async function getLastDayBeginTimeFromDailyRoutineCompletionStatusAndUpda
 
 export async function getStreakLeaderboard(env: Env): Promise<SanitizedUserData[]> {
 	const result = await env.DB
-		.prepare('SELECT id, name, email, coins, diamonds, streak FROM users ORDER BY streak DESC')
+		.prepare('SELECT id, name, email, coins, diamonds, streak, badges FROM users ORDER BY streak DESC')
 		.all();
 
 	return result.results.map(row => sanitizeUserData(row));

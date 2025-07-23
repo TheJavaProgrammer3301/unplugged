@@ -7,7 +7,7 @@ let currentAudio: HTMLAudioElement | null = null;
 let currentSoundName: string | null = null;
 
 export function playSound(soundName: string) {
-	if (soundName === currentSoundName && currentAudio?.paused === false) return;
+	// if (soundName === currentSoundName && currentAudio?.paused === false) return;
 
 	currentSoundName = soundName;
 	currentAudio?.pause();
