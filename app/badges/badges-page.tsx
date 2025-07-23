@@ -1,8 +1,13 @@
-import { Button } from "@mui/joy";
+import { ArrowBack, EmojiEvents } from '@mui/icons-material';
+import { Box, Button, Card, Divider, Grid, Sheet, Typography } from "@mui/joy";
+import { CssVarsProvider } from '@mui/joy/styles';
 import { useNavigate } from "react-router";
 import type { SanitizedUserData } from "workers/read-api";
-import "~/index.scss";
+import "~/mui/index.scss";
+import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./badges-page.css";
+
+const INSET = 32;
 
 interface Badge {
 	title: string;
@@ -25,35 +30,112 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 	const navigate = useNavigate();
 	
 	return (
-		<div className="app-wrapper">
-			<div className="phone-container badges-page">
-				<div className="top-bar">
-					<div className="back-button-container">
-						<button className="back-button" onClick={() => window.history.back()}>
-							← Back
-						</button>
-					</div>
-					<h1 className="mind-title">Your Badges</h1>
-				</div>
+		<CssVarsProvider theme={CURRENT_JOY_THEME}>
+			<Sheet
+				sx={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					boxSizing: "border-box",
+					background: CURRENT_THEME.colors.primaryBackground,
+					padding: `${INSET}px`,
+					gap: `${INSET / 2}px`
+				}}
+				id="root"
+			>
+				<Box sx={{ display: "flex", alignItems: "center" }}>
+					<Button
+						color='danger'
+						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+						onClick={() => navigate("/dashboard")}
+					>
+						<ArrowBack />
+						<Typography sx={{ color: "white" }}>Back</Typography>
+					</Button>
+					<Box sx={{ flexGrow: 1 }} />
+					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+						Your Badges
+					</Typography>
+				</Box>
+				<Divider />
 
-				<div className="badge-grid">
-					{badges
-						.filter(badge => /*!badge.secret || accountInfo.badges.includes(badge.title)*/true)
-						.map((badge, i) => (
-							<div
-								key={i}
-								className={`badge-card ${accountInfo.badges.includes(badge.title) ? "earned" : "locked"}`}
-							>
-								<div className="badge-icon">{badge.icon}</div>
-								<div className="badge-text">
-									<h3>{badge.title}</h3>
-									<p>{badge.description}</p>
-								</div>
-							</div>
-						))}
-				</div>
+				{/* Badge Grid */}
+				<Box
+					sx={{
+						flexGrow: 1,
+						overflowY: "auto",
+						scrollbarGutter: "stable",
+						scrollBehavior: "smooth",
+						"&::-webkit-scrollbar": {
+							width: 0
+						}
+					}}
+				>
+					<Grid container spacing={1} sx={{ margin: 0 }}>
+						{badges
+							.filter(badge => /*!badge.secret || accountInfo.badges.includes(badge.title)*/true)
+							.map((badge, i) => {
+								const isEarned = accountInfo.badges.includes(badge.title);
+								return (
+									<Grid key={i} xs={6}>
+										<Card
+											sx={{
+												background: "rgba(255, 255, 255, 0.08)",
+												borderRadius: "12px",
+												padding: "12px",
+												color: "white",
+												display: "flex",
+												flexDirection: "column",
+												alignItems: "center",
+												justifyContent: "center",
+												minHeight: "120px",
+												boxShadow: "0 2px 4px rgba(255, 255, 255, 0.08)",
+												opacity: isEarned ? 1 : 0.35,
+												filter: isEarned ? "none" : "grayscale(100%)",
+												textAlign: "center"
+											}}
+											variant="plain"
+										>
+											<Typography 
+												sx={{ 
+													fontSize: "1.5rem", 
+													marginBottom: "8px" 
+												}}
+											>
+												{badge.icon}
+											</Typography>
+											<Typography 
+												level="title-sm" 
+												sx={{ 
+													color: "white", 
+													fontWeight: "bold",
+													fontSize: "0.85rem",
+													marginBottom: "4px"
+												}}
+											>
+												{badge.title}
+											</Typography>
+											<Typography 
+												level="body-xs" 
+												sx={{ 
+													color: "#ccc", 
+													fontSize: "0.65rem",
+													textAlign: "center",
+													lineHeight: 1.2
+												}}
+											>
+												{badge.description}
+											</Typography>
+										</Card>
+									</Grid>
+								);
+							})}
+					</Grid>
+				</Box>
 
+				{/* Leaderboard Button */}
 				<Button
+					onClick={() => navigate("/leaderboard/badges")}
 					sx={{
 						width: "100%",
 						background: "linear-gradient(135deg, #ffd700, #f5c518)",
@@ -63,16 +145,20 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 						borderRadius: "12px",
 						boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
 						fontSize: "1rem",
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center",
+						gap: "8px",
 						'&:hover': {
 							transform: "scale(1.02)",
 							boxShadow: "0 6px 14px rgba(255, 215, 0, 0.45)"
 						}
 					}}
-					onClick={() => navigate("/leaderboard/badges")}
 				>
-					🏆 Leaderboard
+					<EmojiEvents />
+					Leaderboard
 				</Button>
-			</div>
-		</div>
+			</Sheet>
+		</CssVarsProvider>
 	);
 }
