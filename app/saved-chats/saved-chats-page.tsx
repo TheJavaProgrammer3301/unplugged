@@ -1,18 +1,6 @@
 import { useNavigate } from "react-router";
-import "~/mui/index.scss";
+import "~/index.scss";
 import "./saved-chats-page.css";
-
-// function SavedChatCard({ id, name, lastUpdatedAt, onOpen }: { id: string; name: string; lastUpdatedAt: number; onOpen: (id: string) => void }) {
-// 	return (
-// 		<ListItem>
-// 			<ListItemButton onClick={() => onOpen(id)} sx={{ borderRadius: "8px", padding: "0px" }}>
-// 				<Typography>{name}</Typography>
-// 				<Typography>{new Date(lastUpdatedAt).toLocaleString()}</Typography>
-// 				<Button onClick={() => onOpen(id)}>Open</Button>
-// 			</ListItemButton>
-// 		</ListItem>
-// 	);
-// }
 
 export default function SavedChatsPage({ savedChats }: {
 	savedChats: {

@@ -270,11 +270,9 @@ export async function logIn(env: Env, email: string, password: string): Promise<
 }
 
 export async function setDailyChallenge(env: Env, userId: string, challenge: string): Promise<Response> {
-	console.warn("fein");
 	const output = await ensureExpirationOfChallenge(env, userId);
-	console.log("Output of ensureExpirationOfChallenge:", output);
+
 	if (output) {
-		console.log("Expired");
 		const createdTime = Date.now();
 
 		{
@@ -285,6 +283,12 @@ export async function setDailyChallenge(env: Env, userId: string, challenge: str
 
 		{
 			const statement = env.DB.prepare('INSERT OR REPLACE INTO currentChallenges (user, challengeCreatedAt) VALUES (?, ?)').bind(userId, createdTime);
+
+			await statement.run();
+		}
+
+		{
+			const statement = env.DB.prepare('INSERT OR REPLACE INTO routineItems (user, temporary, name, id) VALUES (?, 1, ?, ?)').bind(userId, `Mind bank: ${challenge}`, crypto.randomUUID());
 
 			await statement.run();
 		}
@@ -334,6 +338,23 @@ export async function ensureExpirationOfChallengeFromCreatedAt(env: Env, userId:
 	return false;
 }
 
+export async function resetDailyRoutineItemCompletionStatesIfNecessary(env: Env, userId: string): Promise<void> {
+	const lastLoggedOn = await getLastLoggedOnTime(env, userId);
+	const now = Date.now();
+
+	if (!lastLoggedOn) return;
+
+	const timeDiff = now - lastLoggedOn;
+	const oneDayMs = 24 * 60 * 60 * 1000;
+
+	if (timeDiff >= oneDayMs) {
+		// Reset all routine items to not completed
+		await env.DB.prepare('UPDATE routineItems SET completed = 0 WHERE user = ?').bind(userId).run();
+		// Delete any temporary routine items
+		await env.DB.prepare('DELETE FROM routineItems WHERE user = ? AND temporary = 1').bind(userId).run();
+	}
+}
+
 export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
 	const lastLoggedOn = await getLastLoggedOnTime(env, userId);
 	const now = Date.now();
@@ -358,21 +379,6 @@ export async function tryUpdateStreak(env: Env, userId: string): Promise<void> {
 			await env.DB.prepare('INSERT INTO logonTimes (user, createdAt) VALUES (?, ?)').bind(userId, now).run();
 			await env.DB.prepare('UPDATE users SET streak = 1 WHERE id = ?').bind(userId).run();
 		}
-	}
-}
-
-export async function resetDailyRoutineItemCompletionStatesIfNecessary(env: Env, userId: string): Promise<void> {
-	const lastLoggedOn = await getLastLoggedOnTime(env, userId);
-	const now = Date.now();
-
-	if (!lastLoggedOn) return;
-
-	const timeDiff = now - lastLoggedOn;
-	const oneDayMs = 24 * 60 * 60 * 1000;
-
-	if (timeDiff >= oneDayMs) {
-		// Reset all routine items to not completed
-		await env.DB.prepare('UPDATE routineItems SET completed = 0 WHERE user = ?').bind(userId).run();
 	}
 }
 
