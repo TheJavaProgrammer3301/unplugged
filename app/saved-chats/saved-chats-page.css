@@ -1,4 +1,4 @@
-.saved-chats-header {
+/* .saved-chats-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,4 +53,8 @@
 
 .open-chat-button:hover {
   background: #5800cc;
+} */
+
+#saved-chats::-webkit-scrollbar {
+	width: 0;
 }

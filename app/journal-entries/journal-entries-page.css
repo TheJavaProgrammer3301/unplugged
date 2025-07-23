@@ -1,4 +1,4 @@
-.journal-entries-header {
+/* .journal-entries-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -53,4 +53,8 @@
 
 .open-entry-button:hover {
   background: #5800cc;
+} */
+
+#journal-entries::-webkit-scrollbar {
+	width: 0;
 }

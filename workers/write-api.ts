@@ -413,11 +413,7 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 export async function ensureExpirationOfChallenge(env: Env, userId: string): Promise<boolean> {
 	const currentDailyChallengeCreatedAt = await getCurrentChallengeCreatedAt(env, userId);
 
-	console.log(currentDailyChallengeCreatedAt, "guh");
-
 	if (!currentDailyChallengeCreatedAt) return true;
-
-	console.log(currentDailyChallengeCreatedAt, "duh");
 
 	return await ensureExpirationOfChallengeFromCreatedAt(env, userId, currentDailyChallengeCreatedAt);
 }

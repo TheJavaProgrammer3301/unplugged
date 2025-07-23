@@ -24,6 +24,7 @@ export default function JournalEntriesPage({ entries }: { entries?: JournalEntry
 					padding: `${INSET}px`,
 					gap: `${INSET / 2}px`
 				}}
+				id="root"
 			>
 				<Box sx={{ display: "flex", alignItems: "center" }}>
 					<Button
@@ -41,47 +42,54 @@ export default function JournalEntriesPage({ entries }: { entries?: JournalEntry
 				</Box>
 				<Divider />
 
-				<List sx={{ 
-					padding: 0, 
-					flexGrow: "1", 
-					gap: `${INSET / 2}px`, 
-					overflowY: "auto", 
-					scrollbarGutter: "stable", 
-					scrollBehavior: "smooth"
-				}}>
+				<List
+					id="journal-entries"
+					sx={{
+						padding: 0,
+						flexGrow: "1",
+						gap: `${INSET / 2}px`,
+						overflowY: "auto",
+						scrollbarGutter: "stable",
+						scrollBehavior: "smooth"
+					}}>
 					{entries?.map((entry) => (
 						<ListItem key={entry.id} sx={{ padding: '0' }}>
-							<Card 
-								sx={{ 
+							<Card
+								sx={{
 									width: "100%",
-									borderRadius: "12px", 
+									borderRadius: "12px",
 									backgroundColor: "rgba(255, 255, 255, 0.07)",
 									borderColor: "rgba(255, 255, 255, 0.15)",
 									boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)",
 									padding: "12px",
 									display: "flex",
 									justifyContent: "space-between",
-									alignItems: "center"
-								}} 
+									alignItems: "center",
+									flexDirection: "row"
+								}}
 								variant="outlined"
 							>
-								<Box sx={{ display: "flex", flexDirection: "column" }}>
-									<Typography 
+								<Box sx={{
+									display: "flex",
+									justifyContent: "space-between",
+									flexGrow: 1,
+									flexDirection: "column"
+								}}>
+									<Typography
 										level="title-md"
-										sx={{ 
-											color: "white", 
+										sx={{
+											color: "white",
 											fontWeight: "600",
 											margin: 0
 										}}
 									>
 										{entry.name}
 									</Typography>
-									<Typography 
+									<Typography
 										level="body-sm"
-										sx={{ 
+										sx={{
 											color: "#bbb",
 											fontSize: "0.75rem",
-											marginTop: "4px"
 										}}
 									>
 										{new Date(entry.createdAt).toLocaleString()}
@@ -89,18 +97,6 @@ export default function JournalEntriesPage({ entries }: { entries?: JournalEntry
 								</Box>
 								<Button
 									onClick={() => navigate(`/journal/${entry.id}`)}
-									sx={{
-										background: "#6a00ff",
-										color: "white",
-										padding: "6px 12px",
-										borderRadius: "8px",
-										fontSize: "0.8rem",
-										boxShadow: "0 3px 8px rgba(106, 0, 255, 0.4)",
-										'&:hover': {
-											background: "#5800cc",
-											transform: "scale(1.05)"
-										}
-									}}
 								>
 									Open
 								</Button>

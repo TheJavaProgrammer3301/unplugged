@@ -1,9 +1,13 @@
-// ...imports
-import { Snackbar } from "@mui/joy";
+import { ArrowBack } from '@mui/icons-material';
+import { Box, Button, Card, Divider, Sheet, Snackbar, Typography } from "@mui/joy";
+import { CssVarsProvider } from '@mui/joy/styles';
 import { useEffect, useState } from "react";
 import type { Challenge } from "workers/read-api";
-import "~/index.scss";
+import "~/mui/index.scss";
+import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./mind-bank-page.css";
+
+const INSET = 32;
 
 const challenges = [
 	"No phone for 24 hours<br>Your streak will be saved",
@@ -19,7 +23,7 @@ const challenges = [
 const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) => {
 	const [rotation, setRotation] = useState(0);
 	const [isSpinning, setIsSpinning] = useState(false);
-	const [selectedChallenge, setSelectedChallenge] = useState(dailyChallenge?.challenge ?? "");
+	const [selectedChallenge, setSelectedChallenge] = useState(dailyChallenge?.challenge);
 	const [canSpin, setCanSpin] = useState(true);
 	const [timeLeft, setTimeLeft] = useState("");
 	const [completed, setCompleted] = useState(dailyChallenge?.completed ?? false);
@@ -28,14 +32,6 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 	const anglePerSlice = 360 / challenges.length;
 
 	useEffect(() => {
-		// const saved = localStorage.getItem("selectedChallenge");
-		// if (saved) {
-		// 	setSelectedChallenge(saved);
-		// }
-
-		// const completeFlag = localStorage.getItem("challengeCompleted");
-		// if (completeFlag === "true") setCompleted(true);
-
 		const lastSpin = dailyChallenge?.createdAt;
 		const now = Date.now();
 
@@ -88,7 +84,6 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 				headers: { "Content-Type": "application/json" },
 			});
 
-			// localStorage.setItem("lastSpinDate", new Date().toDateString());
 			setCanSpin(false);
 			setRotation(fullSpins * 360 + randomSlice * anglePerSlice + anglePerSlice / 2);
 		}, 3500);
@@ -112,70 +107,180 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 		}
 
 		setCompleted(true);
-		// localStorage.setItem("challengeCompleted", "true");
 	};
 
 	return (
-		<div className="app-wrapper">
-			<div className="phone-container mind-bank">
-				<div className="top-bar">
-					<div className="back-button-container">
-						<button className="back-button" onClick={() => window.history.back()}>← Back</button>
-					</div>
-					<h1 className="mind-title">Mind Bank</h1>
-				</div>
-
-				<div className="wheel-wrapper">
-					<div
-						className={`wheel ${isSpinning ? "spinning" : ""}`}
-						style={{ transform: `rotate(${rotation}deg)` }}
+		<CssVarsProvider theme={CURRENT_JOY_THEME}>
+			<Sheet
+				sx={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					boxSizing: "border-box",
+					background: CURRENT_THEME.colors.primaryBackground,
+					padding: `${INSET}px`,
+					gap: `${INSET / 2}px`
+				}}
+				id="root"
+			>
+				<Box sx={{ display: "flex", alignItems: "center" }}>
+					<Button
+						color='danger'
+						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+						onClick={() => window.history.back()}
 					>
-						{challenges.map((_, index) => (
-							<div
-								key={index}
-								className="wheel-slice"
-								style={{ transform: `rotate(${index * anglePerSlice}deg)` }}
-							/>
-						))}
-					</div>
-					<div className="wheel-arrow">▼</div>
-				</div>
+						<ArrowBack />
+						<Typography sx={{ color: "white" }}>Back</Typography>
+					</Button>
+					<Box sx={{ flexGrow: 1 }} />
+					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+						Mind Bank
+					</Typography>
+				</Box>
+				<Divider />
 
-				<button className="spin-button" onClick={spinWheel} disabled={!canSpin}>
-					{canSpin ? "Spin for Challenge" : `Next spin in ${timeLeft}`}
-				</button>
+				<Box sx={{
+					display: "flex",
+					flexDirection: "column",
+					alignItems: "center",
+					gap: `${INSET / 2}px`,
+					flexGrow: 1
+				}}>
+					<Box sx={{
+						position: "relative",
+						width: "180px",
+						height: "180px",
+						margin: "16px 0"
+					}}>
+						<Box
+							className={`wheel ${isSpinning ? "spinning" : ""}`}
+							sx={{
+								width: "100%",
+								height: "100%",
+								borderRadius: "50%",
+								position: "relative",
+								transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
+								background: `conic-gradient(
+									#6a00ff 0% 12.5%,
+									#302b63 12.5% 25%,
+									#0f0c29 25% 37.5%,
+									#4b0082 37.5% 50%,
+									#6a00ff 50% 62.5%,
+									#302b63 62.5% 75%,
+									#0f0c29 75% 87.5%,
+									#4b0082 87.5% 100%
+								)`,
+								border: "4px solid #fff",
+								transform: `rotate(${rotation}deg)`
+							}}
+						>
+							{challenges.map((_, index) => (
+								<Box
+									key={index}
+									sx={{
+										position: "absolute",
+										width: "50%",
+										height: "2px",
+										background: "#ffffffaa",
+										top: "50%",
+										left: "50%",
+										transformOrigin: "left",
+										transform: `rotate(${index * anglePerSlice}deg)`
+									}}
+								/>
+							))}
+						</Box>
+						<Typography
+							sx={{
+								position: "absolute",
+								top: "-16px",
+								left: "52%",
+								transform: "translateX(-50%)",
+								fontSize: "1.5rem",
+								color: "#fff"
+							}}
+						>
+							▼
+						</Typography>
+					</Box>
 
-				<div className="challenge-box">
-					<h2>Challenge</h2>
-					<p
-						dangerouslySetInnerHTML={{
-							__html: selectedChallenge || "Spin the wheel to receive a challenge!",
+					<Button
+						onClick={spinWheel}
+						disabled={!canSpin}
+						sx={{
+							background: canSpin ? "linear-gradient(90deg, #6a00ff, #302b63)" : "gray",
+							color: "white",
+							fontSize: "1rem",
+							fontWeight: "bold",
+							padding: "12px 16px",
+							borderRadius: "12px",
+							width: "100%",
+							cursor: canSpin ? "pointer" : "not-allowed",
+							'&:hover': canSpin ? {
+								background: "linear-gradient(90deg, #302b63, #6a00ff)"
+							} : {}
 						}}
-					/>
-				</div>
-
-				{selectedChallenge && (
-					<button
-						className="complete-button"
-						onClick={markComplete}
-						disabled={completed}
 					>
-						{completed ? "Challenge Completed!" : "I completed the challenge"}
-					</button>
-				)}
-				{badge !== "" && <Snackbar
-					open={completed}
-					// onClose={() => setCompleted(false)}
+						{canSpin ? "Spin for Challenge" : `Next spin in ${timeLeft}`}
+					</Button>
+
+					<Card
+						sx={{
+							backgroundColor: "rgba(255, 255, 255, 0.1)",
+							borderColor: "rgba(255, 255, 255, 0.2)",
+							borderRadius: "16px",
+							width: "100%",
+							textAlign: "center",
+							boxShadow: "0 0 10px rgba(255, 255, 255, 0.1)",
+							padding: "16px"
+						}}
+						variant="outlined"
+					>
+						<Typography level="h3" sx={{ color: "#fff", marginBottom: "8px" }}>
+							Challenge
+						</Typography>
+						<Typography
+							sx={{ color: "#fff" }}
+						>
+							{selectedChallenge ?? "Spin the wheel to receive a challenge!"}
+						</Typography>
+					</Card>
+
+					{selectedChallenge && (
+						<Button
+							onClick={markComplete}
+							disabled={completed}
+							sx={{
+								background: completed ? "#444" : "linear-gradient(135deg, #27ae60, #2ecc71)",
+								color: "white",
+								fontWeight: "bold",
+								padding: "12px",
+								borderRadius: "12px",
+								width: "100%",
+								opacity: completed ? 0.6 : 1,
+								cursor: completed ? "not-allowed" : "pointer",
+								'&:hover': !completed ? {
+									background: "linear-gradient(135deg, #2ecc71, #27ae60)"
+								} : {}
+							}}
+						>
+							{completed ? "Challenge Completed!" : "I completed the challenge"}
+						</Button>
+					)}
+				</Box>
+
+				<Snackbar
+					open={badge !== ""}
 					autoHideDuration={3000}
 					variant="soft"
 					anchorOrigin={{ vertical: "top", horizontal: "center" }}
 					color="success"
-					className="challenge-complete-snackbar"
+					onClose={() => setBadge("")}
 				>
 					Badge complete: {badge}
-				</Snackbar>}
-			</div>
-		</div>
+				</Snackbar>
+			</Sheet>
+		</CssVarsProvider>
 	);
 };
 
