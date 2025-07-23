@@ -15,7 +15,7 @@ const badges: Badge[] = [
 	{ title: "Congressional Hearing", description: "Write 5 journal entries", icon: "🧘", secret: false },
 	{ title: "Obedient User", description: "Completed 3 challenges", icon: "🌟", secret: false },
 	{ title: "Chatty Fella", description: "Have 5 AI chats", icon: "📵", secret: false },
-	{ title: "Goonsplosion", description: "Mention gooning in a journal entry", icon: "💦", secret: true },
+	{ title: "Goonsplosion", description: "Mention gooning in a chat with Theryn", icon: "💦", secret: true },
 	{ title: "Mystery Meatloaf", description: "Play 10 songs using Theryn", icon: "🍖", secret: true },
 ];
 
