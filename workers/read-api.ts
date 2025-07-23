@@ -11,7 +11,8 @@ function sanitizeUserData(user: any): SanitizedUserData {
 		streak: user.streak,
 		savedQuotes: JSON.parse(user.savedQuotes ?? "[]") as string[],
 		createdAt: user.createdAt as number,
-		bio: user.bio ?? ""
+		bio: user.bio ?? "",
+		badges: JSON.parse(user.badges ?? "[]") as string[]
 	};
 }
 
@@ -25,7 +26,8 @@ export type SanitizedUserData = {
 	savedQuotes: string[];
 	createdAt: number;
 	bio: string;
-	username: string
+	username: string;
+	badges: string[];
 }
 
 export type JournalEntry = {
@@ -174,7 +176,7 @@ export async function getLastDayBeginTimeFromDailyRoutineCompletionStatusAndUpda
 
 export async function getStreakLeaderboard(env: Env): Promise<SanitizedUserData[]> {
 	const result = await env.DB
-		.prepare('SELECT id, name, email, coins, diamonds, streak FROM users ORDER BY streak DESC LIMIT 10')
+		.prepare('SELECT id, name, email, coins, diamonds, streak FROM users ORDER BY streak DESC')
 		.all();
 
 	return result.results.map(row => sanitizeUserData(row));

@@ -188,7 +188,7 @@ export async function createSession(env: Env, id: string): Promise<Response> {
 	}, { status: 201 });
 }
 
-export async function createConversation(env: Env, userId: string): Promise<string> {
+export async function createConversation(env: Env, userId: string): Promise<[string, number]> {
 	const conversationId = crypto.randomUUID();
 
 	const statement = env.DB
@@ -196,7 +196,26 @@ export async function createConversation(env: Env, userId: string): Promise<stri
 		.bind(conversationId, userId, JSON.stringify([]), Date.now());
 	await statement.run();
 
-	return conversationId;
+	// Count total conversations for this user
+	const countResult = await env.DB
+		.prepare('SELECT COUNT(*) as count FROM conversations WHERE user = ?')
+		.bind(userId)
+		.first();
+	const totalConversations = (countResult?.count as number) || 0;
+
+	// Add "Chatty Fella" badge if user now has 5 conversations
+	if (totalConversations === 5) {
+		const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+		const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+		
+		if (!currentBadges.includes("Chatty Fella")) {
+			currentBadges.push("Chatty Fella");
+			await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+				.bind(JSON.stringify(currentBadges), userId).run();
+		}
+	}
+
+	return [conversationId, totalConversations];
 }
 
 export async function getConversation(env: Env, conversationId: string): Promise<ChatCompletionMessageParam[]> {
@@ -212,7 +231,7 @@ export async function getConversation(env: Env, conversationId: string): Promise
 
 export async function sendMessageToConversation(env: Env, conversationId: string, input: string): Promise<Response> {
 	const result = await env.DB
-		.prepare('SELECT content FROM conversations WHERE id = ?')
+		.prepare('SELECT content, user FROM conversations WHERE id = ?')
 		.bind(conversationId)
 		.first();
 
@@ -221,6 +240,19 @@ export async function sendMessageToConversation(env: Env, conversationId: string
 	try {
 		const conversation = JSON.parse(result.content as string) as ChatCompletionMessageParam[];
 		const finalConversation = await addMessageToConversation(env, conversation, conversationId, input);
+
+		// Check if input contains "goon" and add badge
+		if (input.toLowerCase().includes("goon")) {
+			const userId = result.user as string;
+			const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+			const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+			
+			if (!currentBadges.includes("Goonsplosion")) {
+				currentBadges.push("Goonsplosion");
+				await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+					.bind(JSON.stringify(currentBadges), userId).run();
+			}
+		}
 
 		return Response.json(finalConversation);
 	} catch (e) {
@@ -241,7 +273,26 @@ export async function createJournalEntry(env: Env, userId: string, contents: str
 
 		await statement.run();
 
-		return Response.json({ id }, { status: 201 });
+		// Count total journal entries for this user
+		const countResult = await env.DB
+			.prepare('SELECT COUNT(*) as count FROM journalEntries WHERE user = ?')
+			.bind(userId)
+			.first();
+		const totalJournalEntries = (countResult?.count as number) || 0;
+
+		// Add "Congressional Hearing" badge if user now has 5 journal entries
+		if (totalJournalEntries === 5) {
+			const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+			const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+			
+			if (!currentBadges.includes("Congressional Hearing")) {
+				currentBadges.push("Congressional Hearing");
+				await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+					.bind(JSON.stringify(currentBadges), userId).run();
+			}
+		}
+
+		return Response.json({ id, totalJournalEntries }, { status: 201 });
 	} catch (error) {
 		console.warn("Error creating journal entry:", error);
 		return new Response("Error creating journal entry", { status: 500 });
@@ -303,9 +354,46 @@ export async function updateDailyChallenge(env: Env, userId: string, completed: 
 	if (currentDailyChallengeCreatedAt === null) return new Response(null, { status: 204 });
 
 	if (await ensureExpirationOfChallengeFromCreatedAt(env, userId, currentDailyChallengeCreatedAt) === false) {
+		// Count completed challenges before updating
+		const beforeCountResult = await env.DB.prepare('SELECT COUNT(*) as count FROM challenges WHERE user = ? AND completed = 1').bind(userId).first();
+		const completedCountBefore = (beforeCountResult?.count as number) || 0;
+
 		const statement = env.DB.prepare('UPDATE challenges SET completed = ? WHERE user = ? AND createdAt = ?').bind(completed ? 1 : 0, userId, currentDailyChallengeCreatedAt);
 
 		await statement.run();
+
+		// If marking as completed, check if this is a milestone
+		if (completed) {
+			const afterCountResult = await env.DB.prepare('SELECT COUNT(*) as count FROM challenges WHERE user = ? AND completed = 1').bind(userId).first();
+			const completedCountAfter = (afterCountResult?.count as number) || 0;
+
+			// Return special response for milestones
+			if (completedCountAfter === 1) {
+				// Add "First Spin" badge
+				const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+				const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+				
+				if (!currentBadges.includes("First Spin")) {
+					currentBadges.push("First Spin");
+					await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+						.bind(JSON.stringify(currentBadges), userId).run();
+				}
+
+				return Response.json({ firstSpin: true });
+			} else if (completedCountAfter === 3) {
+				// Add "Obedient User" badge
+				const userResult = await env.DB.prepare('SELECT badges FROM users WHERE id = ?').bind(userId).first();
+				const currentBadges: string[] = userResult?.badges ? JSON.parse(userResult.badges as string) : [];
+				
+				if (!currentBadges.includes("Obedient User")) {
+					currentBadges.push("Obedient User");
+					await env.DB.prepare('UPDATE users SET badges = ? WHERE id = ?')
+						.bind(JSON.stringify(currentBadges), userId).run();
+				}
+
+				return Response.json({ goodBoy: true });
+			}
+		}
 	}
 
 	return new Response(null, { status: 204 });

@@ -1,4 +1,5 @@
 // ...imports
+import { Snackbar } from "@mui/joy";
 import { useEffect, useState } from "react";
 import type { Challenge } from "workers/read-api";
 import "~/index.scss";
@@ -22,6 +23,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 	const [canSpin, setCanSpin] = useState(true);
 	const [timeLeft, setTimeLeft] = useState("");
 	const [completed, setCompleted] = useState(dailyChallenge?.completed ?? false);
+	const [badge, setBadge] = useState("");
 
 	const anglePerSlice = 360 / challenges.length;
 
@@ -95,11 +97,19 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 	const markComplete = async () => {
 		if (!selectedChallenge || completed) return;
 
-		await fetch("/api/challenge", {
+		const response = await fetch("/api/challenge", {
 			method: "PUT",
 			body: JSON.stringify({ completed: true }),
 			headers: { "Content-Type": "application/json" },
 		});
+
+		const body = await response.json() as { [key: string]: boolean };
+
+		if (body.firstSpin) {
+			setBadge("First Spin");
+		} else if (body.goodBoy) {
+			setBadge("Obedient User");
+		}
 
 		setCompleted(true);
 		// localStorage.setItem("challengeCompleted", "true");
@@ -153,6 +163,17 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 						{completed ? "Challenge Completed!" : "I completed the challenge"}
 					</button>
 				)}
+				{badge !== "" && <Snackbar
+					open={completed}
+					// onClose={() => setCompleted(false)}
+					autoHideDuration={3000}
+					variant="soft"
+					anchorOrigin={{ vertical: "top", horizontal: "center" }}
+					color="success"
+					className="challenge-complete-snackbar"
+				>
+					Badge complete: {badge}
+				</Snackbar>}
 			</div>
 		</div>
 	);

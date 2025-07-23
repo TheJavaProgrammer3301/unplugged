@@ -1,3 +1,4 @@
+import { Snackbar } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import type { JournalEntry } from "workers/read-api";
@@ -29,6 +30,8 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 		setEntries(newEntries);
 	};
 
+	const [badge, setBadge] = useState("");
+
 	const handleSave = async () => {
 		if (entry) return; // prevent saving if viewing an existing entry
 
@@ -43,7 +46,13 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 
 			if (!response.ok) throw new Error("Failed to save journal entry");
 
-			navigate("/journal-entries");
+			if ((await response.json() as { totalJournalEntries: number }).totalJournalEntries === 5) {
+				setBadge("Congressional Hearing");
+
+				setTimeout(() => {
+					navigate("/journal-entries");
+				}, 3000);
+			} else navigate("/journal-entries");
 		} catch (error) {
 			console.error("Failed to save journal entry:", error);
 		}
@@ -102,6 +111,18 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 					Previous Entries
 				</button>
 			</div>
+
+			{badge !== "" && <Snackbar
+				open={badge !== ""}
+				// onClose={() => setCompleted(false)}
+				autoHideDuration={3000}
+				variant="soft"
+				anchorOrigin={{ vertical: "top", horizontal: "center" }}
+				color="success"
+				className="challenge-complete-snackbar"
+			>
+				Badge complete: {badge}
+			</Snackbar>}
 		</div>
 	);
 }

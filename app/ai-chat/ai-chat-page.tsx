@@ -1,5 +1,5 @@
 import { ArrowBack, Send } from '@mui/icons-material';
-import { Avatar, Box, Button, Card, CircularProgress, Divider, List, ListItem, Sheet, Textarea, Typography } from "@mui/joy";
+import { Avatar, Box, Button, Card, CircularProgress, Divider, List, ListItem, Sheet, Snackbar, Textarea, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import type { ChatCompletionMessageParam } from "openai/resources";
 import React, { useEffect, useState } from "react";
@@ -43,29 +43,29 @@ function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessage
 	// Function to detect and extract sound commands from message
 	const detectSoundCommands = (content: string): SoundCommand[] => {
 		const foundCommands: SoundCommand[] = [];
-		
+
 		SOUND_COMMANDS.forEach(soundName => {
 			const pattern = new RegExp(`!playSound\\s+${soundName}`, 'gi');
 			if (pattern.test(content)) {
 				foundCommands.push(soundName);
 			}
 		});
-		
+
 		return foundCommands;
 	};
 
 	// Function to remove sound commands from message
 	const removeSoundCommands = (content: string): string => {
 		let cleanedContent = content;
-		
+
 		SOUND_COMMANDS.forEach(soundName => {
 			const pattern = new RegExp(`!playSound\\s+${soundName}`, 'gi');
 			cleanedContent = cleanedContent.replace(pattern, '`<used a command>`');
 		});
-		
+
 		return cleanedContent.trim();
 	};
-	
+
 	// Check if this is a new AI message containing sound commands
 	useEffect(() => {
 		if (isNewMessage && message.role === "assistant") {
@@ -111,14 +111,14 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 
 	useEffect(() => {
 		if (localStorage.getItem("sayonaraMode") === "true") {
-		setSayonaraMode(true);
+			setSayonaraMode(true);
 		}
 	}, []);
 
 	const triggersSayonara = (text: string) => {
 		return (
-		/sayonara/i.test(text) &&
-		/(play|!playSound|music|song|listen|hear|start)/i.test(text)
+			/sayonara/i.test(text) &&
+			/(play|!playSound|music|song|listen|hear|start)/i.test(text)
 		);
 	};
 
@@ -133,6 +133,8 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 			setSayonaraMode(true);
 			localStorage.setItem("sayonaraMode", "true");
 		}
+
+		if (input.toLowerCase().includes("goon")) setBadge("Goonsplosion");
 
 		setMessages((prev) => [...prev, userMessage]);
 		setInput("");
@@ -156,7 +158,9 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 				return;
 			}
 
-			const data = await response.json() as { conversationId: string; conversation: ChatCompletionMessageParam[] };
+			const data = await response.json() as { conversationId: string; conversation: ChatCompletionMessageParam[]; totalConversations: number };
+
+			if (data.totalConversations === 5) setBadge("Chatty Fella");
 
 			setPreviousMessageCount(data.conversation.length);
 			navigate(`/ai-chat/${data.conversationId}`, { replace: true });
@@ -185,6 +189,8 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 			setPreviousMessageCount(newMessageCount - 1);
 		}
 	};
+
+	const [badge, setBadge] = useState("");
 
 	return (
 		<CssVarsProvider theme={CURRENT_JOY_THEME}>
@@ -217,10 +223,10 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 				<Divider />
 				<List id="chat-messages" sx={{ padding: 0, flexGrow: "1", gap: `${INSET / 2}px`, overflowY: "auto", scrollbarGutter: "stable", scrollBehavior: "smooth" }}>
 					{messages.map((msg, idx) =>
-						<ChatMessage 
-							message={msg} 
-							key={idx} 
-							isNewMessage={idx >= previousMessageCount} 
+						<ChatMessage
+							message={msg}
+							key={idx}
+							isNewMessage={idx >= previousMessageCount}
 						/>
 					)}
 					{isLoading && <CircularProgress variant='outlined' />}
@@ -259,6 +265,17 @@ export default function AIChatPage({ conversation, chatId }: { conversation?: Ch
 						onClick={handleSend}
 					><Send /></Button>
 				</Box>
+				{badge !== "" && <Snackbar
+					open={badge !== ""}
+					// onClose={() => setCompleted(false)}
+					autoHideDuration={3000}
+					variant="soft"
+					anchorOrigin={{ vertical: "top", horizontal: "center" }}
+					color="success"
+					className="challenge-complete-snackbar"
+				>
+					Badge complete: {badge}
+				</Snackbar>}
 			</Sheet>
 		</CssVarsProvider>
 	);

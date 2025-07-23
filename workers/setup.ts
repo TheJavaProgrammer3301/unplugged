@@ -67,12 +67,12 @@ router.post(`${BACKEND_PREFIX}/conversations`, async (request) => {
 		return new Response("Missing start message", { status: 400 });
 	}
 
-	const convoId = await createConversation(request.env, userId);
+	const [convoId, count] = await createConversation(request.env, userId);
 	const conversation = await addMessageToConversation(request.env, [], convoId, body.startMessage);
 
 	await setNameOfConversation(request.env, convoId, await generateNameForConversation(request.env, conversation));
 
-	return Response.json({ conversationId: convoId, conversation }, { status: 201 });
+	return Response.json({ conversationId: convoId, conversation, totalConversations: count }, { status: 201 });
 });
 
 router.post(`${BACKEND_PREFIX}/conversations/:conversationId/messages`, async (request) => {
