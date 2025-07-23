@@ -1,9 +1,14 @@
+import { ArrowBack, Delete } from '@mui/icons-material';
+import { Alert, Box, Button, Card, Checkbox, Divider, IconButton, Input, List, ListItem, Sheet, Stack, Typography } from "@mui/joy";
+import { CssVarsProvider } from '@mui/joy/styles';
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import type { RoutineItem } from "workers/read-api";
-import "~/index.scss";
+import "~/mui/index.scss";
+import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./daily-routine-page.css";
 
+const INSET = 32;
 const TEMP_ID_PREFIX = "temp";
 
 export default function RoutinePage({ routine }: { routine: RoutineItem[] | null }) {
@@ -42,13 +47,11 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 				return prev.filter(task => task.id !== id);
 			});
 			console.warn("Error adding task:", e);
-			// alert("Failed to add task. Please try again."); // Simple error handling
 		}
 	};
 
 	const handleToggleTask = useCallback(async (id: string) => {
 		let referencedTask: RoutineItem | undefined;
-		let jobId = Math.random().toString(36).substring(2, 9);
 
 		referencedTask = tasks.find(task => task.id === id);
 
@@ -93,72 +96,163 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 	const allCompleted = useMemo(() => tasks.length > 0 && tasks.every(v => v.completed), [tasks]);
 
 	return (
-		<div className="app-wrapper">
-			<div className="phone-container">
-				{/* Top Bar */}
-				<div className="top-bar">
-					<div className="back-button-container">
-						<button className="back-button" onClick={() => navigate("/dashboard")}>
-							←
-						</button>
-					</div>
-					<div className="page-title">Daily Routine</div>
-					<div style={{ width: "24px" }} />
-				</div>
+		<CssVarsProvider theme={CURRENT_JOY_THEME}>
+			<Sheet
+				sx={{
+					height: "100vh",
+					display: "flex",
+					flexDirection: "column",
+					boxSizing: "border-box",
+					background: CURRENT_THEME.colors.primaryBackground,
+					padding: `${INSET}px`,
+					gap: `${INSET / 2}px`
+				}}
+				id="root"
+			>
+				<Box sx={{ display: "flex", alignItems: "center" }}>
+					<Button
+						color='danger'
+						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
+						onClick={() => navigate("/dashboard")}
+					>
+						<ArrowBack />
+						<Typography sx={{ color: "white" }}>Back</Typography>
+					</Button>
+					<Box sx={{ flexGrow: 1 }} />
+					<Typography level="h2" component="h1" sx={{ color: "white", fontWeight: "bold", textAlign: "center" }}>
+						Daily Routine
+					</Typography>
+				</Box>
+				<Divider />
 
-				{/* Task List */}
-				<div className="task-list">
-					{tasks.map(({ id, name, completed }) => (
-						<div key={id} className={`task-card ${completed ? "completed" : ""}`}>
-							<label className="task-label">
-								<input
-									type="checkbox"
-									checked={completed}
-									onChange={() => handleToggleTask(id)}
-									disabled={showInput}
-								/>
-								<span>{name}</span>
-							</label>
-							{showInput && (
-								<button
-									className="remove-task-btn"
-									onClick={() => handleRemoveTask(id)}
-								>
-									Remove
-								</button>
-							)}
-						</div>
-					))}
-				</div>
-
-				{/* Input Field */}
+				{/* Add Task Form */}
 				{showInput && (
-					<div className="add-task-form">
-						<input
+					<Stack direction="row" spacing={1}>
+						<Input
 							value={newTask}
 							onChange={(e) => setNewTask(e.target.value)}
 							onKeyDown={(e) => { if (e.key === "Enter") handleAddTask(); }}
 							placeholder="Add routine item..."
+							sx={{
+								flexGrow: 1,
+								backgroundColor: CURRENT_THEME.colors.assistantChatBackground,
+								borderColor: "rgba(255, 255, 255, 0.3)",
+								color: "white"
+							}}
 						/>
-						<button onClick={handleAddTask}>Add</button>
-					</div>
+						<Button
+							onClick={handleAddTask}
+							sx={{
+								color: "white",
+								fontWeight: "bold",
+							}}
+						>
+							Add
+						</Button>
+					</Stack>
 				)}
 
-				{/* Congrats */}
+				{/* Task List */}
+				<List id="daily-routine" sx={{ 
+					padding: 0, 
+					flexGrow: "1", 
+					gap: "12px", 
+					overflowY: "auto", 
+					scrollbarGutter: "stable", 
+					scrollBehavior: "smooth"
+				}}>
+					{tasks.map(({ id, name, completed }) => (
+						<ListItem key={id} sx={{ padding: '0' }}>
+							<Card 
+								sx={{ 
+									width: "100%",
+									borderRadius: "8px", 
+									backgroundColor: "rgba(255, 255, 255, 0.08)",
+									borderLeft: "4px solid #00c853",
+									padding: "8px 12px",
+									display: "flex",
+									justifyContent: "space-between",
+									alignItems: "center",
+									opacity: completed ? 0.6 : 1,
+									textDecoration: completed ? "line-through" : "none",
+									flexDirection: "row"
+								}} 
+								variant="plain"
+							>
+								<Box sx={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, flexGrow: 1 }}>
+									<Checkbox
+										checked={completed}
+										onChange={() => handleToggleTask(id)}
+										disabled={showInput}
+										sx={{
+											color: "white",
+											'&.Mui-checked': {
+												color: "#00c853"
+											}
+										}}
+									/>
+									<Typography 
+										sx={{ 
+											color: "white", 
+											fontSize: "0.9rem",
+											flexGrow: 1
+										}}
+									>
+										{name}
+									</Typography>
+								</Box>
+								{showInput && (
+									<IconButton
+										onClick={() => handleRemoveTask(id)}
+										sx={{
+											color: "#ff5555",
+											fontSize: "0.75rem",
+											minHeight: "unset",
+											minWidth: "unset",
+											padding: "4px"
+										}}
+									>
+										<Delete fontSize="small" />
+									</IconButton>
+								)}
+							</Card>
+						</ListItem>
+					))}
+				</List>
+
+				{/* Congrats Message */}
 				{allCompleted && (
-					<div className="congrats-message">
+					<Alert
+						color="success"
+						sx={{
+							backgroundColor: "#00c853",
+							color: "black",
+							fontWeight: "bold",
+							fontSize: "0.95rem",
+							textAlign: "center"
+						}}
+					>
 						🎉 Congrats! You completed your routine!
-					</div>
+					</Alert>
 				)}
 
 				{/* Edit Toggle */}
-				<button
-					className="edit-button"
+				<Button
 					onClick={() => setShowInput((prev) => !prev)}
+					sx={{
+						backgroundColor: "rgba(255, 255, 255, 0.15)",
+						color: "white",
+						fontSize: "0.85rem",
+						padding: "8px 12px",
+						borderRadius: "8px",
+						'&:hover': {
+							backgroundColor: "rgba(255, 255, 255, 0.25)"
+						}
+					}}
 				>
 					{showInput ? "Done" : "Edit Routine"}
-				</button>
-			</div>
-		</div>
+				</Button>
+			</Sheet>
+		</CssVarsProvider>
 	);
 }
