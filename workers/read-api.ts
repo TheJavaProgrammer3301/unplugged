@@ -49,6 +49,13 @@ export type Challenge = {
 	completed: boolean;
 }
 
+export type DayActivity = {
+	newJournalEntries: JournalEntry[];
+	newAiChats: SavedChat[];
+	completedChallenges: Challenge[];
+	disabled: boolean;
+}
+
 export type WeeklySummary = {
 	activeDayCount: number;
 	newJournalEntries: number;
@@ -58,6 +65,7 @@ export type WeeklySummary = {
 	journalEntriesCountPercentile: number;
 	aiChatsStartedPercentile: number;
 	challengesCompletedPercentile: number;
+	activity: DayActivity[];
 }
 
 export type SavedChat = {
@@ -124,7 +132,7 @@ export async function getSavedChats(env: Env, userId: string): Promise<SavedChat
 	return result.results.map(row => ({
 		id: row.id as string,
 		lastUpdatedAt: row.lastUpdatedAt as number,
-		createdAt: row.createdAt as number,
+		createdAt: (row.createdAt === 0 ? row.lastUpdatedAt : row.createdAt) as number,
 		name: (row.name ?? "none") as string
 	}));
 }
@@ -229,13 +237,24 @@ export async function getChallengesCompletedByUser(env: Env, userId: string): Pr
 
 export async function getWeeklySummary(env: Env, userId: string): Promise<WeeklySummary> {
 	const now = Date.now();
-	const startOfWeek = now - (now % (7 * 24 * 60 * 60 * 1000)); // Start of the current week in milliseconds
-	const activeDays = await getActiveDays(env, userId);
-	const newJournalEntries = (await getJournalEntries(env, userId)).filter(entry => entry.createdAt >= startOfWeek).length;
-	const aiChatsStarted = (await getSavedChats(env, userId)).filter(chat => chat.createdAt >= startOfWeek).length;
-	const challengesCompleted = (await getChallengesCompletedByUser(env, userId)).filter(challenge => challenge.createdAt >= startOfWeek).length;
 
-	const activeDayCount = activeDays.length;
+	// Calculate start of the current week (Sunday at 00:00:00)
+	const currentDate = new Date(now);
+	const dayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+	const startOfWeek = new Date(currentDate);
+	startOfWeek.setDate(currentDate.getDate() - dayOfWeek);
+	startOfWeek.setHours(0, 0, 0, 0);
+	const startOfWeekTime = startOfWeek.getTime();
+
+	const activeDays = await getActiveDays(env, userId);
+	const newJournalEntries = (await getJournalEntries(env, userId)).filter(entry => entry.createdAt >= startOfWeekTime).length;
+	const aiChatsStarted = (await getSavedChats(env, userId)).filter(chat => chat.createdAt >= startOfWeekTime).length;
+	const challengesCompleted = (await getChallengesCompletedByUser(env, userId)).filter(challenge => challenge.createdAt >= startOfWeekTime).length;
+
+	const activeDayCount = activeDays.filter(day => {
+		const dayTime = new Date(day).getTime();
+		return dayTime >= startOfWeekTime;
+	}).length;
 
 	// Get all users for percentile calculations
 	const allUsers = await env.DB.prepare('SELECT id FROM users').all();
@@ -244,14 +263,14 @@ export async function getWeeklySummary(env: Env, userId: string): Promise<Weekly
 	// Calculate stats for all users
 	const allUserStats = await Promise.all(userIds.map(async (id) => {
 		const userActiveDays = await getActiveDays(env, id);
-		const userJournalEntries = (await getJournalEntries(env, id)).filter(entry => entry.createdAt >= startOfWeek).length;
-		const userAiChats = (await getSavedChats(env, id)).filter(chat => chat.createdAt >= startOfWeek).length;
-		const userChallenges = (await getChallengesCompletedByUser(env, id)).filter(challenge => challenge.createdAt >= startOfWeek).length;
-		
+		const userJournalEntries = (await getJournalEntries(env, id)).filter(entry => entry.createdAt >= startOfWeekTime).length;
+		const userAiChats = (await getSavedChats(env, id)).filter(chat => chat.createdAt >= startOfWeekTime).length;
+		const userChallenges = (await getChallengesCompletedByUser(env, id)).filter(challenge => challenge.createdAt >= startOfWeekTime).length;
+
 		return {
 			activeDayCount: userActiveDays.filter(day => {
 				const dayTime = new Date(day).getTime();
-				return dayTime >= startOfWeek;
+				return dayTime >= startOfWeekTime;
 			}).length,
 			journalEntries: userJournalEntries,
 			aiChats: userAiChats,
@@ -271,6 +290,19 @@ export async function getWeeklySummary(env: Env, userId: string): Promise<Weekly
 	const aiChatsStartedPercentile = calculatePercentile(aiChatsStarted, allUserStats.map(stat => stat.aiChats));
 	const challengesCompletedPercentile = calculatePercentile(challengesCompleted, allUserStats.map(stat => stat.challenges));
 
+	// start of each day in the week based on startOfWeekTime
+	const dayStarts = Array.from({ length: 7 }, (_, i) => new Date(startOfWeekTime + i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10));
+
+	const activity: DayActivity[] = await Promise.all(dayStarts.map(async day => {
+		const dayTime = new Date(day).getTime();
+
+		const entries = (await getJournalEntries(env, userId)).filter(entry => entry.createdAt >= dayTime && entry.createdAt < dayTime + 24 * 60 * 60 * 1000);
+		const aiChats = (await getSavedChats(env, userId)).filter(chat => chat.createdAt >= dayTime && chat.createdAt < dayTime + 24 * 60 * 60 * 1000);
+		const completedChallenges = (await getChallengesCompletedByUser(env, userId)).filter(challenge => challenge.createdAt >= dayTime && challenge.createdAt < dayTime + 24 * 60 * 60 * 1000);
+
+		return { newJournalEntries: entries, newAiChats: aiChats, completedChallenges, disabled: day > new Date(now).toISOString().slice(0, 10) };
+	}));
+
 	return {
 		activeDayCount,
 		newJournalEntries,
@@ -279,6 +311,7 @@ export async function getWeeklySummary(env: Env, userId: string): Promise<Weekly
 		activeDaysCountPercentile,
 		journalEntriesCountPercentile,
 		aiChatsStartedPercentile,
-		challengesCompletedPercentile
+		challengesCompletedPercentile,
+		activity
 	};
 }

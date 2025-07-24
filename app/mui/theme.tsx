@@ -57,7 +57,11 @@ export const CURRENT_JOY_THEME = extendTheme({
 				},
 				neutral: {
 					outlinedColor: "rgb(255, 255, 255)", // text color
-					softBg: CURRENT_THEME.colors.assistantChatBackground
+					softBg: CURRENT_THEME.colors.assistantChatBackground,
+					plainActiveBg: "white",
+					plainActiveColor: "#252525",
+					plainHoverBg: "#185EA5",
+					plainHoverColor: "white"
 				},
 				primary: {
 					solidBg: CURRENT_THEME.colors.assistantChatBorder,

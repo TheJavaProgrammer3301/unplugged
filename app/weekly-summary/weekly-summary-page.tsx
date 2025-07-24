@@ -1,8 +1,9 @@
-import { ArrowBack } from '@mui/icons-material';
-import { Box, Button, Card, Divider, Sheet, Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
+import { ArrowBack, KeyboardArrowDown } from '@mui/icons-material';
+import { Box, Button, Card, Divider, IconButton, List, ListItem, Sheet, Tab, TabList, TabPanel, Tabs, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
+import { useState } from 'react';
 import { useNavigate } from "react-router";
-import type { WeeklySummary } from 'workers/read-api';
+import type { DayActivity, WeeklySummary } from 'workers/read-api';
 import "~/mui/index.scss";
 import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./weekly-summary-page.css";
@@ -59,26 +60,150 @@ function AtAGlance({ summary }: { summary: WeeklySummary }) {
 	</SummaryBox>;
 }
 
-function DaySummary({ summary, day }: { summary: WeeklySummary; day: number }) {
-	return <TabPanel value={day}>
+function DaySummaryItem({ icon, name, contents, baseUrl }: { icon: string; name: string; contents: [string, string][]; baseUrl?: string }) {
+	const [open, setOpen] = useState(false);
+	const navigate = useNavigate();
 
-	</TabPanel>
+	return (
+		<ListItem
+			nested
+			startAction={
+				<IconButton
+					variant="plain"
+					size="sm"
+					color="neutral"
+					onClick={() => setOpen(!open)}
+				>
+					<KeyboardArrowDown
+						sx={[
+							open ? { transform: 'initial' } : { transform: 'rotate(-90deg)' },
+							{
+								color: "white"
+							}
+						]}
+					/>
+				</IconButton>
+			}
+		>
+			<ListItem>
+				<Typography sx={{
+					color: "white",
+				}}>{icon} {name}: {contents.length}</Typography>
+			</ListItem>
+			{open && <List sx={{
+				'--ListItem-paddingY': '8px',
+				gap: "8px",
+				marginBottom: "8px"
+			}}>
+				{contents.map((content, index) => (
+					<ListItem
+						key={index}
+						sx={{
+							alignItems: "stretch",
+							padding: "0 12px 0 21px"
+						}}
+					>
+						<Button
+							sx={{
+								flexGrow: 1
+							}}
+							onClick={baseUrl !== undefined ? (() => navigate(`${baseUrl}/${content[1]}`)) : undefined}
+							disabled={baseUrl === undefined}
+						>
+							<Typography sx={{
+								color: "white",
+								textAlign: "left",
+								justifyContent: "stretch",
+								flexGrow: 1
+							}}>{content[0]}</Typography>
+						</Button>
+					</ListItem>
+				))}
+			</List>}
+		</ListItem>
+	);
+}
+
+function DaySummary({ dayActivity, day }: { dayActivity?: DayActivity; day: number }) {
+	return <TabPanel
+		value={day}
+		sx={{
+			backgroundColor: "rgba(255, 255, 255, 0.07)",
+			border: "1px solid rgba(255, 255, 255, 0.15)",
+			borderRadius: "8px",
+			padding: "0 16px 0 24px",
+		}}
+	>
+		{dayActivity && (dayActivity.newJournalEntries.length > 0 || dayActivity.newAiChats.length > 0 || dayActivity.completedChallenges.length > 0) ? <List
+			sx={{
+				'--List-insetStart': '32px',
+				'--ListItem-paddingY': '0px',
+				'--ListItem-paddingRight': '16px',
+				'--ListItem-paddingLeft': '21px',
+				'--ListItem-startActionWidth': '0px',
+				'--ListItem-startActionTranslateX': '-50%',
+			}}
+		>
+			{dayActivity.newJournalEntries.length > 0 && <DaySummaryItem
+				icon="📝"
+				name="New journal entries"
+				baseUrl='/journal'
+				contents={dayActivity.newJournalEntries.map(entry => [entry.name, entry.id])}
+			/>}
+			{dayActivity.newAiChats.length > 0 && <DaySummaryItem
+				icon="🤖"
+				name="New AI chats"
+				baseUrl='/ai-chat'
+				contents={dayActivity.newAiChats.map(chat => [chat.name, chat.id])}
+			/>}
+			{dayActivity.completedChallenges.length > 0 && <DaySummaryItem
+				icon="🏆"
+				name="Completed challenges"
+				contents={dayActivity.completedChallenges.map(challenge => [challenge.challenge, challenge.challenge])}
+			/>}
+		</List> : <Typography level="h2" sx={{ color: "white", textAlign: "center", margin: "40px" }}>No activity yet</Typography>}
+	</TabPanel>;
 }
 
 function DayByDay({ summary }: { summary: WeeklySummary }) {
 	return <SummaryBox>
+		<Typography
+			sx={{
+				color: "white",
+				fontWeight: "bold",
+				marginTop: "16px",
+			}}
+			level='h1'
+		>Day by day</Typography>
 		<Tabs
-			sx={{ marginTop: "16px" }}
+			sx={{
+				background: "transparent"
+			}}
 		>
-			<TabList>
+			<TabList
+				sx={{
+					backgroundColor: "rgba(255, 255, 255, 0.07)",
+					border: "1px solid rgba(255, 255, 255, 0.15)",
+					borderRadius: "8px",
+					marginBottom: "16px"
+				}}
+			>
 				{daysOfTheWeek.map((day, index) => (
-					<Tab key={index}>
+					<Tab
+						key={index}
+						sx={{
+							color: "white",
+							borderRadius: index === 0 ? "8px 0 0 8px" : index === daysOfTheWeek.length - 1 ? "0 8px 8px 0" : "0",
+							flexGrow: 1
+						}}
+						disabled={summary.activity[index]?.disabled}
+						disableIndicator>
 						{day.substring(0, 3)}
 					</Tab >
 				))}
 			</TabList>
 			{daysOfTheWeek.map((_, index) => (
-				<DaySummary key={index} summary={summary} day={index} />
+				<DaySummary key={index} dayActivity={summary.activity[index]} day={index} />
 			))}
 		</Tabs>
 	</SummaryBox>
