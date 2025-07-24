@@ -214,6 +214,29 @@ function UserAvatar({ accountInfo }: { accountInfo?: SanitizedUserData }) {
 	</Box>
 }
 
+function MainButton({ name, color, desc, route }: { name: string; color: "danger" | "warning" | "success" | "neutral"; desc: string; route: string }) {
+	const navigate = useNavigate();
+
+	return <Grid xs={6}>
+		<Button
+			color={color}
+			variant="solid"
+			onClick={() => navigate(route)}
+			sx={{
+				gap: "0.75rem 1rem",
+				flexDirection: "column",
+				alignItems: "start",
+				textAlign: "left",
+				fontWeight: "unset",
+				padding: "16px"
+			}}
+		>
+			<Typography textColor="inherit" sx={{ fontSize: "20px" }} color={color} level="title-md">{name}</Typography>
+			<Typography textColor="inherit" color={color}>{desc}</Typography>
+		</Button>
+	</Grid>
+}
+
 export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUserData }) {
 	const navigate = useNavigate();
 
@@ -289,110 +312,108 @@ export default function Dashboard({ accountInfo }: { accountInfo?: SanitizedUser
 				</Typography>
 
 				<Grid container spacing={1} sx={{ marginBottom: "16px" }}>
-					<Grid xs={6}>
-						<Button
-							onClick={() => navigate("/quote-bank")}
-							sx={{
-								width: "100%",
-								background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-								padding: "16px",
-								fontSize: "0.9rem",
-								fontWeight: "600",
-								borderRadius: "12px",
-								boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
-								color: "#e0f7ff",
-								textTransform: "uppercase",
-								letterSpacing: "0.05em",
-								minHeight: "80px",
-								'&:hover': {
-									background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-									boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
-									color: "#fff",
-									transform: "scale(1.05)"
-								}
-							}}
-						>
-							Quote Bank
-						</Button>
-					</Grid>
-					<Grid xs={6}>
-						<Button
-							onClick={() => navigate("/journal")}
-							sx={{
-								width: "100%",
-								background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-								padding: "16px",
-								fontSize: "0.9rem",
-								fontWeight: "600",
-								borderRadius: "12px",
-								boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
-								color: "#e0f7ff",
-								textTransform: "uppercase",
-								letterSpacing: "0.05em",
-								minHeight: "80px",
-								'&:hover': {
-									background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-									boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
-									color: "#fff",
-									transform: "scale(1.05)"
-								}
-							}}
-						>
-							Journal
-						</Button>
-					</Grid>
-					<Grid xs={6}>
-						<Button
-							onClick={() => navigate("/daily-routine")}
-							sx={{
-								width: "100%",
-								background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-								padding: "16px",
-								fontSize: "0.9rem",
-								fontWeight: "600",
-								borderRadius: "12px",
-								boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
-								color: "#e0f7ff",
-								textTransform: "uppercase",
-								letterSpacing: "0.05em",
-								minHeight: "80px",
-								'&:hover': {
-									background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-									boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
-									color: "#fff",
-									transform: "scale(1.05)"
-								}
-							}}
-						>
-							Daily Routine
-						</Button>
-					</Grid>
-					<Grid xs={6}>
-						<Button
-							onClick={() => navigate("/mind-bank")}
-							sx={{
-								width: "100%",
-								background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-								padding: "16px",
-								fontSize: "0.9rem",
-								fontWeight: "600",
-								borderRadius: "12px",
-								boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
-								color: "#e0f7ff",
-								textTransform: "uppercase",
-								letterSpacing: "0.05em",
-								minHeight: "80px",
-								'&:hover': {
-									background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-									boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
-									color: "#fff",
-									transform: "scale(1.05)"
-								}
-							}}
-						>
-							Mind Bank
-						</Button>
-					</Grid>
+					<MainButton
+						name="Quote bank"
+						color="danger"
+						desc="View/purchase quotes."
+						route="/quote-bank"
+					/>
+					<MainButton
+						name="Journal"
+						color="neutral"
+						desc="Write and reflect."
+						route="/journal"
+					/>
+					<MainButton
+						name="Daily routine"
+						color="warning"
+						desc="Manage your routine."
+						route="/daily-routine"
+					/>
+					<MainButton
+						name="Mind bank"
+						color="success"
+						desc="Challenge yourself."
+						route="/mind-bank"
+					/>
+					{/* // <Grid xs={6}>
+					// 	<Button
+					// 		onClick={() => navigate("/journal")}
+					// 		sx={{
+					// 			width: "100%",
+					// 			background: "linear-gradient(135deg, #00c6ff, #0072ff)",
+					// 			padding: "16px",
+					// 			fontSize: "0.9rem",
+					// 			fontWeight: "600",
+					// 			borderRadius: "12px",
+					// 			boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
+					// 			color: "#e0f7ff",
+					// 			textTransform: "uppercase",
+					// 			letterSpacing: "0.05em",
+					// 			minHeight: "80px",
+					// 			'&:hover': {
+					// 				background: "linear-gradient(135deg, #0072ff, #00c6ff)",
+					// 				boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
+					// 				color: "#fff",
+					// 				transform: "scale(1.05)"
+					// 			}
+					// 		}}
+					// 	>
+					// 		Journal
+					// 	</Button>
+					// </Grid>
+					// <Grid xs={6}>
+					// 	<Button
+					// 		onClick={() => navigate("/daily-routine")}
+					// 		sx={{
+					// 			width: "100%",
+					// 			background: "linear-gradient(135deg, #00c6ff, #0072ff)",
+					// 			padding: "16px",
+					// 			fontSize: "0.9rem",
+					// 			fontWeight: "600",
+					// 			borderRadius: "12px",
+					// 			boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
+					// 			color: "#e0f7ff",
+					// 			textTransform: "uppercase",
+					// 			letterSpacing: "0.05em",
+					// 			minHeight: "80px",
+					// 			'&:hover': {
+					// 				background: "linear-gradient(135deg, #0072ff, #00c6ff)",
+					// 				boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
+					// 				color: "#fff",
+					// 				transform: "scale(1.05)"
+					// 			}
+					// 		}}
+					// 	>
+					// 		Daily Routine
+					// 	</Button>
+					// </Grid>
+					// <Grid xs={6}>
+					// 	<Button
+					// 		onClick={() => navigate("/mind-bank")}
+					// 		sx={{
+					// 			width: "100%",
+					// 			background: "linear-gradient(135deg, #00c6ff, #0072ff)",
+					// 			padding: "16px",
+					// 			fontSize: "0.9rem",
+					// 			fontWeight: "600",
+					// 			borderRadius: "12px",
+					// 			boxShadow: "0 4px 14px rgba(0, 114, 255, 0.8)",
+					// 			color: "#e0f7ff",
+					// 			textTransform: "uppercase",
+					// 			letterSpacing: "0.05em",
+					// 			minHeight: "80px",
+					// 			'&:hover': {
+					// 				background: "linear-gradient(135deg, #0072ff, #00c6ff)",
+					// 				boxShadow: "0 6px 20px rgba(0, 198, 255, 0.9)",
+					// 				color: "#fff",
+					// 				transform: "scale(1.05)"
+					// 			}
+					// 		}}
+					// 	>
+					// 		Mind Bank
+					// 	</Button>
+					// </Grid> */}
 				</Grid>
 
 				<AIButton accountInfo={accountInfo} />

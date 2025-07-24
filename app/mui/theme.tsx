@@ -62,7 +62,10 @@ export const CURRENT_JOY_THEME = extendTheme({
 					plainActiveColor: "#252525",
 					plainHoverBg: "#185EA5",
 					plainHoverColor: "white",
-					outlinedDisabledBorder: "rgba(255, 255, 255, 0.2)"
+					outlinedDisabledBorder: "rgba(255, 255, 255, 0.2)",
+					solidBg: "#185EA5",
+					solidHoverBg: "rgba(18, 70, 123, 1)",
+					solidActiveBg: "rgba(08, 60, 113, 1)"
 				},
 				primary: {
 					solidBg: CURRENT_THEME.colors.assistantChatBorder,
