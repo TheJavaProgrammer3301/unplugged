@@ -41,9 +41,10 @@ Our built-in **AI therapy assistant** offers private, conversational support. Wh
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React  
-- **Styling:** CSS  
-- **Hosting:** Cloudflare Workers  
+- **Frontend:** React Router, SCSS, Vite, Cloudflare Wrangler
+- **Backend:** Cloudflare Wrangler, Typescript, cloudflare-worker-router
+- **Hosting:** Cloudflare Workers
+- **External tools:** Cloudflare D1 databases, OpenAI
 
 ## 📖 How to Use
 
@@ -56,6 +57,6 @@ No 2-step login required. No distractions. Just peace of mind.
 
 ## 👥 Built With Love By
 
-Sammy 💻  
 Jason 🧠  
+Sammy 💻  
 Caleb 🎨
