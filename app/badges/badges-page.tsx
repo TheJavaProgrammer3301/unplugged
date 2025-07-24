@@ -18,11 +18,11 @@ interface Badge {
 
 const badges: Badge[] = [
 	{ title: "First Spin", description: "Completed your first challenge", icon: "🎯", secret: false },
-	{ title: "Good Boy", description: "Have a 3 day streak", icon: "💧", secret: false },
-	{ title: "Congressional Hearing", description: "Write 5 journal entries", icon: "🧘", secret: false },
-	{ title: "Obedient User", description: "Completed 3 challenges", icon: "🌟", secret: false },
-	{ title: "Chatty Fella", description: "Have 5 AI chats", icon: "📵", secret: false },
-	{ title: "Goonsplosion", description: "Mention gooning in a chat with Theryn", icon: "💦", secret: true },
+	{ title: "Consistent", description: "Have a 3 day streak", icon: "💧", secret: false },
+	{ title: "Certified Author", description: "Write 5 journal entries", icon: "🧘", secret: false },
+	{ title: "The Challenger", description: "Completed 3 challenges", icon: "🌟", secret: false },
+	{ title: "Rainforest Destroyer", description: "Create 5 AI chats", icon: "📵", secret: false },
+	{ title: "Top Dawg", description: "Be in first place on a leaderboard", icon: "💦", secret: true },
 	{ title: "Mystery Meatloaf", description: "Play 10 songs using Theryn", icon: "🍖", secret: true },
 ];
 
