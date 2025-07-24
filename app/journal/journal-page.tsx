@@ -171,18 +171,19 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 					{!entry && (
 						<Button
 							onClick={handleSave}
-							sx={{
-								background: "linear-gradient(to right, #00c9ff, #92fe9d)",
-								color: "#1a1a1a",
-								fontWeight: "bold",
-								padding: "12px",
-								borderRadius: "10px",
-								fontSize: "0.95rem",
-								'&:hover': {
-									background: "linear-gradient(to right, #92fe9d, #00c9ff)",
-									transform: "scale(1.02)"
-								}
-							}}
+							size="lg"
+							// sx={{
+							// 	background: "linear-gradient(to right, #00c9ff, #92fe9d)",
+							// 	color: "#1a1a1a",
+							// 	fontWeight: "bold",
+							// 	padding: "12px",
+							// 	borderRadius: "10px",
+							// 	fontSize: "0.95rem",
+							// 	'&:hover': {
+							// 		background: "linear-gradient(to right, #92fe9d, #00c9ff)",
+							// 		transform: "scale(1.02)"
+							// 	}
+							// }}
 						>
 							Save Entry
 						</Button>
@@ -190,17 +191,19 @@ export default function JournalPage({ entry }: { entry: JournalEntry | null }) {
 
 					<Button
 						onClick={() => navigate("/journal-entries")}
+						size="lg"
+						variant='outlined'
 						sx={{
-							background: "linear-gradient(135deg, #00c6ff, #0072ff)",
-							color: "white",
-							fontWeight: "bold",
-							padding: "12px",
-							borderRadius: "10px",
-							fontSize: "0.95rem",
-							'&:hover': {
-								background: "linear-gradient(135deg, #0072ff, #00c6ff)",
-								transform: "scale(1.02)"
-							}
+							// background: "linear-gradient(135deg, #00c6ff, #0072ff)",
+							// color: "white",
+							// fontWeight: "bold",
+							// padding: "12px",
+							// borderRadius: "10px",
+							// fontSize: "0.95rem",
+							// '&:hover': {
+							// 	background: "linear-gradient(135deg, #0072ff, #00c6ff)",
+							// 	transform: "scale(1.02)"
+							// }
 						}}
 					>
 						Previous Entries

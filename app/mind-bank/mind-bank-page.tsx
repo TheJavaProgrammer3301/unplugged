@@ -2,6 +2,7 @@ import { ArrowBack } from '@mui/icons-material';
 import { Box, Button, Card, Divider, Sheet, Snackbar, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router';
 import type { Challenge } from "workers/read-api";
 import "~/mui/index.scss";
 import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
@@ -28,6 +29,8 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 	const [timeLeft, setTimeLeft] = useState("");
 	const [completed, setCompleted] = useState(dailyChallenge?.completed ?? false);
 	const [badge, setBadge] = useState("");
+
+	const navigate = useNavigate();
 
 	const anglePerSlice = 360 / challenges.length;
 
@@ -133,7 +136,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 					<Button
 						color='danger'
 						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
-						onClick={() => window.history.back()}
+						onClick={() => navigate("/dashboard")}
 					>
 						<ArrowBack />
 						<Typography sx={{ color: "white" }}>Back</Typography>

@@ -45,7 +45,7 @@ export default function StreakPage({ accountInfo, activeDays }: { accountInfo: S
 					<Button
 						color='danger'
 						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
-						onClick={() => window.history.back()}
+						onClick={() => navigate("/dashboard")}
 					>
 						<ArrowBack />
 						<Typography sx={{ color: "white" }}>Back</Typography>
