@@ -36,29 +36,20 @@ export default {
 			response = await MAIN_ROUTER.handle(request, env, ctx);
 		} else {
 			{
-				const handlers = [
-					...(MAIN_ROUTER as unknown as HackableRouter).globalHandlers
-				];
-				for (const handler of handlers) {
-					const context = {
-						// ...(ctxExt ?? {}),
-						env,
-						req: request,
-						ctx
-					};
-					const res = await handler({ env, req: { raw: request }, ctx } as RouterContext);
-					// if (res) {
-					// 	response = res;
-					// 	// break;
-					// }
+				const globalHandlerStartTime = Date.now();
+				for (const handler of (MAIN_ROUTER as unknown as HackableRouter).globalHandlers) {
+					await handler({ env, req: { raw: request }, ctx } as RouterContext);
 				}
+				const globalHandlerDuration = Date.now() - globalHandlerStartTime;
+				console.debug(`[workers] global handlers executed in ${globalHandlerDuration}ms`);
 			}
-			// allow middleware to run before the request handler
-			// await MAIN_ROUTER.handle(request, env, ctx);
 
+			const requestHandlerStartTime = Date.now();
 			response = await requestHandler(request, {
 				cloudflare: { env, ctx },
 			});
+			const requestHandlerDuration = Date.now() - requestHandlerStartTime;
+			console.debug(`[workers] request handler executed in ${requestHandlerDuration}ms`);
 		}
 
 		const duration = Date.now() - startTime;

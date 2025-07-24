@@ -1,5 +1,5 @@
+import { getSavedChats } from "workers/read-api";
 import { getSessionIdFromRequest, getUserIdFromSession } from "workers/utils";
-import { getSavedChats } from "workers/write-api";
 import SavedChatsPage from "~/saved-chats/saved-chats-page";
 import type { Route } from "./+types/saved-chats";
 

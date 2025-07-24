@@ -2,6 +2,7 @@ import { ArrowBack } from '@mui/icons-material';
 import { Box, Button, Card, Divider, List, ListItem, Sheet, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import { useNavigate } from "react-router";
+import type { SavedChat } from 'workers/read-api';
 import "~/mui/index.scss";
 import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
 import "./saved-chats-page.css";
@@ -9,11 +10,7 @@ import "./saved-chats-page.css";
 const INSET = 32;
 
 export default function JournalEntriesPage({ savedChats }: {
-	savedChats: {
-		id: string;
-		lastUpdatedAt: number;
-		name: string;
-	}[]
+	savedChats: SavedChat[]
 }) {
 	const navigate = useNavigate();
 

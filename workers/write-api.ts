@@ -49,19 +49,6 @@ export async function addMessageToConversation(env: Env, conversation: ChatCompl
 	return finalConversation;
 }
 
-export async function getSavedChats(env: Env, userId: string): Promise<{ id: string; lastUpdatedAt: number; name: string }[]> {
-	const result = await env.DB
-		.prepare('SELECT id, lastUpdatedAt, name FROM conversations WHERE user = ?')
-		.bind(userId)
-		.all();
-
-	return result.results.map(row => ({
-		id: row.id as string,
-		lastUpdatedAt: row.lastUpdatedAt as number,
-		name: (row.name ?? "none") as string
-	}));
-}
-
 export async function addDailyRoutineItem(env: Env, userId: string, item: string): Promise<Response> {
 	const id = crypto.randomUUID();
 
@@ -203,8 +190,8 @@ export async function createConversation(env: Env, userId: string): Promise<[str
 	const conversationId = crypto.randomUUID();
 
 	const statement = env.DB
-		.prepare('INSERT INTO conversations (id, user, content, lastUpdatedAt) VALUES (?, ?, ?, ?)')
-		.bind(conversationId, userId, JSON.stringify([]), Date.now());
+		.prepare('INSERT INTO conversations (id, user, content, lastUpdatedAt, createdAt) VALUES (?, ?, ?, ?, ?)')
+		.bind(conversationId, userId, JSON.stringify([]), Date.now(), Date.now());
 	await statement.run();
 
 	// Count total conversations for this user
