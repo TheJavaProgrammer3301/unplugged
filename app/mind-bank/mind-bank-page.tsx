@@ -2,6 +2,7 @@ import { ArrowBack } from '@mui/icons-material';
 import { Box, Button, Card, Divider, Sheet, Snackbar, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import { useEffect, useState } from "react";
+import { useNavigate } from 'react-router';
 import type { Challenge } from "workers/read-api";
 import "~/mui/index.scss";
 import { CURRENT_JOY_THEME, CURRENT_THEME } from '~/mui/theme';
@@ -29,6 +30,8 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 	const [completed, setCompleted] = useState(dailyChallenge?.completed ?? false);
 	const [badge, setBadge] = useState("");
 
+	const navigate = useNavigate();
+
 	const anglePerSlice = 360 / challenges.length;
 
 	useEffect(() => {
@@ -37,6 +40,12 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 
 		if (lastSpin && now - lastSpin < 24 * 60 * 60 * 1000) {
 			setCanSpin(false);
+		}
+	}, [dailyChallenge]);
+
+	useEffect(() => {
+		if (!canSpin) {
+			const lastSpin = dailyChallenge?.createdAt || Date.now();
 			const nextSpinTime = lastSpin + 24 * 60 * 60 * 1000;
 
 			const updateTimer = () => {
@@ -58,7 +67,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 			const interval = setInterval(updateTimer, 1000);
 			return () => clearInterval(interval);
 		}
-	}, [dailyChallenge]);
+	}, [canSpin, dailyChallenge]);
 
 	const spinWheel = () => {
 		if (!canSpin || isSpinning) return;
@@ -127,7 +136,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 					<Button
 						color='danger'
 						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
-						onClick={() => window.history.back()}
+						onClick={() => navigate("/dashboard")}
 					>
 						<ArrowBack />
 						<Typography sx={{ color: "white" }}>Back</Typography>
@@ -142,25 +151,34 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 				<Box sx={{
 					display: "flex",
 					flexDirection: "column",
-					alignItems: "center",
+					alignItems: "stretch",
 					gap: `${INSET / 2}px`,
 					flexGrow: 1
 				}}>
 					<Box sx={{
 						position: "relative",
-						width: "180px",
-						height: "180px",
-						margin: "16px 0"
+						margin: "16px 0",
+						flexGrow: 1,
+						aspectRatio: 1,
+						alignSelf: "center",
+						maxWidth: "100%",
 					}}>
 						<Box
-							className={`wheel ${isSpinning ? "spinning" : ""}`}
 							sx={{
-								width: "100%",
-								height: "100%",
-								borderRadius: "50%",
+								top: "50%",
 								position: "relative",
-								transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
-								background: `conic-gradient(
+								transform: `translateY(-50%)`,
+								aspectRatio: 1
+							}}
+						>
+							<Box
+								className={`wheel ${isSpinning ? "spinning" : ""}`}
+								sx={{
+									borderRadius: "50%",
+									top: "50%",
+									position: "relative",
+									transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
+									background: `conic-gradient(
 									#6a00ff 0% 12.5%,
 									#302b63 12.5% 25%,
 									#0f0c29 25% 37.5%,
@@ -170,38 +188,41 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 									#0f0c29 75% 87.5%,
 									#4b0082 87.5% 100%
 								)`,
-								border: "4px solid #fff",
-								transform: `rotate(${rotation}deg)`
-							}}
-						>
-							{challenges.map((_, index) => (
-								<Box
-									key={index}
-									sx={{
-										position: "absolute",
-										width: "50%",
-										height: "2px",
-										background: "#ffffffaa",
-										top: "50%",
-										left: "50%",
-										transformOrigin: "left",
-										transform: `rotate(${index * anglePerSlice}deg)`
-									}}
-								/>
-							))}
+									border: "4px solid #fff",
+									transform: `translateY(-50%) rotate(${rotation}deg)`,
+									aspectRatio: 1
+								}}
+							>
+								{challenges.map((_, index) => (
+									<Box
+										key={index}
+										sx={{
+											position: "absolute",
+											width: "50%",
+											height: "2px",
+											background: "#ffffffaa",
+											top: "50%",
+											left: "50%",
+											transformOrigin: "left",
+											transform: `rotate(${index * anglePerSlice}deg)`
+										}}
+									/>
+								))}
+							</Box>
+							<Typography
+								sx={{
+									position: "absolute",
+									top: "0",
+									left: "50%",
+									transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
+									transform: `translate(-50%, -50%)`,
+									fontSize: "1.5rem",
+									color: "#fff"
+								}}
+							>
+								▼
+							</Typography>
 						</Box>
-						<Typography
-							sx={{
-								position: "absolute",
-								top: "-16px",
-								left: "52%",
-								transform: "translateX(-50%)",
-								fontSize: "1.5rem",
-								color: "#fff"
-							}}
-						>
-							▼
-						</Typography>
 					</Box>
 
 					<Button
@@ -229,9 +250,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 							backgroundColor: "rgba(255, 255, 255, 0.1)",
 							borderColor: "rgba(255, 255, 255, 0.2)",
 							borderRadius: "16px",
-							width: "100%",
 							textAlign: "center",
-							boxShadow: "0 0 10px rgba(255, 255, 255, 0.1)",
 							padding: "16px"
 						}}
 						variant="outlined"
@@ -244,29 +263,29 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 						>
 							{selectedChallenge ?? "Spin the wheel to receive a challenge!"}
 						</Typography>
-					</Card>
 
-					{selectedChallenge && (
-						<Button
-							onClick={markComplete}
-							disabled={completed}
-							sx={{
-								background: completed ? "#444" : "linear-gradient(135deg, #27ae60, #2ecc71)",
-								color: "white",
-								fontWeight: "bold",
-								padding: "12px",
-								borderRadius: "12px",
-								width: "100%",
-								opacity: completed ? 0.6 : 1,
-								cursor: completed ? "not-allowed" : "pointer",
-								'&:hover': !completed ? {
-									background: "linear-gradient(135deg, #2ecc71, #27ae60)"
-								} : {}
-							}}
-						>
-							{completed ? "Challenge Completed!" : "I completed the challenge"}
-						</Button>
-					)}
+						{selectedChallenge && (
+							<Button
+								onClick={markComplete}
+								disabled={completed}
+								sx={{
+									background: completed ? "#444" : "linear-gradient(135deg, #27ae60, #2ecc71)",
+									color: "white",
+									fontWeight: "bold",
+									padding: "12px",
+									borderRadius: "12px",
+									width: "100%",
+									opacity: completed ? 0.6 : 1,
+									cursor: completed ? "not-allowed" : "pointer",
+									'&:hover': !completed ? {
+										background: "linear-gradient(135deg, #2ecc71, #27ae60)"
+									} : {}
+								}}
+							>
+								{completed ? "Challenge Completed!" : "I completed the challenge"}
+							</Button>
+						)}
+					</Card>
 				</Box>
 
 				<Snackbar

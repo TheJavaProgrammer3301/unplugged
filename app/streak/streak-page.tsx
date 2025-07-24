@@ -1,4 +1,4 @@
-import { ArrowBack } from '@mui/icons-material';
+import { ArrowBack, EmojiEvents } from '@mui/icons-material';
 import { Box, Button, Card, Divider, Grid, Sheet, Typography } from "@mui/joy";
 import { CssVarsProvider } from '@mui/joy/styles';
 import { useNavigate } from "react-router";
@@ -45,7 +45,7 @@ export default function StreakPage({ accountInfo, activeDays }: { accountInfo: S
 					<Button
 						color='danger'
 						sx={{ padding: "6px 12px", gap: "8px", color: "white" }}
-						onClick={() => window.history.back()}
+						onClick={() => navigate("/dashboard")}
 					>
 						<ArrowBack />
 						<Typography sx={{ color: "white" }}>Back</Typography>
@@ -115,16 +115,20 @@ export default function StreakPage({ accountInfo, activeDays }: { accountInfo: S
 								fontWeight: "bold",
 								padding: "12px 16px",
 								borderRadius: "12px",
-								boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
 								fontSize: "1rem",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								gap: "8px",
 								'&:hover': {
-									transform: "scale(1.02)",
-									boxShadow: "0 6px 14px rgba(255, 215, 0, 0.45)"
+									background: "#2c1f00",
+									color: "#f5c518",
 								}
 							}}
 							onClick={() => navigate("/leaderboard")}
 						>
-							🏆 Leaderboard
+							<EmojiEvents />
+							Leaderboard
 						</Button>
 					</Box>
 				</Box>

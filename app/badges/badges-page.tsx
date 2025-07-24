@@ -28,7 +28,7 @@ const badges: Badge[] = [
 
 export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUserData }) {
 	const navigate = useNavigate();
-	
+
 	return (
 		<CssVarsProvider theme={CURRENT_JOY_THEME}>
 			<Sheet
@@ -96,18 +96,18 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 											}}
 											variant="plain"
 										>
-											<Typography 
-												sx={{ 
-													fontSize: "1.5rem", 
-													marginBottom: "8px" 
+											<Typography
+												sx={{
+													fontSize: "1.5rem",
+													marginBottom: "8px"
 												}}
 											>
 												{badge.icon}
 											</Typography>
-											<Typography 
-												level="title-sm" 
-												sx={{ 
-													color: "white", 
+											<Typography
+												level="title-sm"
+												sx={{
+													color: "white",
 													fontWeight: "bold",
 													fontSize: "0.85rem",
 													marginBottom: "4px"
@@ -115,10 +115,10 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 											>
 												{badge.title}
 											</Typography>
-											<Typography 
-												level="body-xs" 
-												sx={{ 
-													color: "#ccc", 
+											<Typography
+												level="body-xs"
+												sx={{
+													color: "#ccc",
 													fontSize: "0.65rem",
 													textAlign: "center",
 													lineHeight: 1.2
@@ -133,9 +133,7 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 					</Grid>
 				</Box>
 
-				{/* Leaderboard Button */}
 				<Button
-					onClick={() => navigate("/leaderboard/badges")}
 					sx={{
 						width: "100%",
 						background: "linear-gradient(135deg, #ffd700, #f5c518)",
@@ -143,17 +141,17 @@ export default function BadgesPage({ accountInfo }: { accountInfo: SanitizedUser
 						fontWeight: "bold",
 						padding: "12px 16px",
 						borderRadius: "12px",
-						boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
 						fontSize: "1rem",
 						display: "flex",
 						alignItems: "center",
 						justifyContent: "center",
 						gap: "8px",
 						'&:hover': {
-							transform: "scale(1.02)",
-							boxShadow: "0 6px 14px rgba(255, 215, 0, 0.45)"
+							background: "#2c1f00",
+							color: "#f5c518",
 						}
 					}}
+					onClick={() => navigate("/leaderboard/badges")}
 				>
 					<EmojiEvents />
 					Leaderboard
