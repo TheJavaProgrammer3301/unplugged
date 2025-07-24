@@ -33,7 +33,7 @@ const colorsets = {
 // Then, pass it to `<CssVarsProvider theme={theme}>`.
 
 // Sound command configuration
-const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend', 'uplifting', 'happy', 'sayonara', 'suicideprevention', 'dontkillyourself'] as const;
+const SOUND_COMMANDS = ['entertainer', 'superstar', 'sneaky', 'calming', 'fiend', 'uplifting', 'happy', 'sayonara', 'suicideprevention', 'dontkillyourself', 'death'] as const;
 type SoundCommand = typeof SOUND_COMMANDS[number];
 
 function ChatMessage({ message, isNewMessage }: { message: ChatCompletionMessageParam; isNewMessage?: boolean }) {
