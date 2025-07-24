@@ -34,6 +34,8 @@ function ProfileField({
 		}
 	};
 
+	const derivedValue = (fieldKey && tempAccountInfo?.[fieldKey]) as string || value;
+
 	return (
 		<Box sx={{ all: 'unset', fontSize: "16px", display: "flex", flexDirection: "row", gap: "8px", minHeight: "36px", alignItems: "center" }}>
 			<Typography sx={{ color: "white" }} level="body-sm"><strong>{label}:</strong></Typography>
@@ -45,10 +47,10 @@ function ProfileField({
 						color: "white",
 						flexGrow: 1
 					}}
-					value={tempAccountInfo?.[fieldKey] as string || value}
+					value={derivedValue}
 					onChange={(e) => handleChange(e.target.value)}
 				/>
-			) : value}
+			) : derivedValue}
 		</Box>
 	);
 }
@@ -248,7 +250,7 @@ export default function ProfilePage({ accountInfo }: { accountInfo: SanitizedUse
 					startDecorator={editing ? <Save /> : <Edit />}
 					sx={{
 						background: "linear-gradient(135deg, #6a00ff, #b900b4)",
-						borderRadius: "12px",
+						// borderRadius: "12px",
 						fontWeight: "bold",
 						color: "white",
 						'&:hover': {
@@ -265,22 +267,25 @@ export default function ProfilePage({ accountInfo }: { accountInfo: SanitizedUse
 				>
 					{editing ? "Save changes" : "Edit profile"}
 				</Button>
-				{editing && <Button
-					variant="solid"
-					size="lg"
-					color='danger'
-					onClick={handleCancel}
-				>
-					Cancel
-				</Button>}
-
-				{!editing && (
+				{editing ? (
+					<Button
+						variant="solid"
+						size="lg"
+						color='danger'
+						onClick={handleCancel}
+						sx={{
+							// marginTop: 2,
+						}}
+					>
+						Cancel
+					</Button>
+				) : (
 					<Button
 						variant="outlined"
 						size="lg"
 						color='danger'
 						sx={{
-							marginTop: 2,
+							// marginTop: 2,
 							borderColor: "rgba(255, 255, 255, 0.3)",
 							color: "rgba(255, 255, 255, 0.7)",
 							'&:hover': {
