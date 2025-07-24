@@ -153,20 +153,20 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 				)}
 
 				{/* Task List */}
-				<List id="daily-routine" sx={{ 
-					padding: 0, 
-					flexGrow: "1", 
-					gap: "12px", 
-					overflowY: "auto", 
-					scrollbarGutter: "stable", 
+				<List id="daily-routine" sx={{
+					padding: 0,
+					flexGrow: "1",
+					gap: "12px",
+					overflowY: "auto",
+					scrollbarGutter: "stable",
 					scrollBehavior: "smooth"
 				}}>
 					{tasks.map(({ id, name, completed }) => (
 						<ListItem key={id} sx={{ padding: '0' }}>
-							<Card 
-								sx={{ 
+							<Card
+								sx={{
 									width: "100%",
-									borderRadius: "8px", 
+									borderRadius: "8px",
 									backgroundColor: "rgba(255, 255, 255, 0.08)",
 									borderLeft: "4px solid #00c853",
 									padding: "8px 12px",
@@ -176,7 +176,7 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 									opacity: completed ? 0.6 : 1,
 									textDecoration: completed ? "line-through" : "none",
 									flexDirection: "row"
-								}} 
+								}}
 								variant="plain"
 							>
 								<Box sx={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, flexGrow: 1 }}>
@@ -188,12 +188,15 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 											color: "white",
 											'&.Mui-checked': {
 												color: "#00c853"
+											},
+											'&.Mui-disabled': {
+												filter: "opacity(0.5)",
 											}
 										}}
 									/>
-									<Typography 
-										sx={{ 
-											color: "white", 
+									<Typography
+										sx={{
+											color: "white",
 											fontSize: "0.9rem",
 											flexGrow: 1
 										}}
@@ -211,6 +214,7 @@ export default function RoutinePage({ routine }: { routine: RoutineItem[] | null
 											minWidth: "unset",
 											padding: "4px"
 										}}
+										color='danger'
 									>
 										<Delete fontSize="small" />
 									</IconButton>
