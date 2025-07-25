@@ -168,7 +168,8 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 								top: "50%",
 								position: "relative",
 								transform: `translateY(-50%)`,
-								aspectRatio: 1
+								aspectRatio: 1,
+								background: "red"
 							}}
 						>
 							<Box
