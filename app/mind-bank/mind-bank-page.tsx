@@ -176,7 +176,7 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 								className={`wheel ${isSpinning ? "spinning" : ""}`}
 								sx={{
 									borderRadius: "50%",
-									top: "50%",
+									top: "75%",
 									position: "relative",
 									transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
 									background: `conic-gradient(
