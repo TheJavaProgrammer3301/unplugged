@@ -168,15 +168,15 @@ const MindBankPage = ({ dailyChallenge }: { dailyChallenge: Challenge | null }) 
 								top: "50%",
 								position: "relative",
 								transform: `translateY(-50%)`,
-								aspectRatio: 1,
-								background: "red"
+								aspectRatio: 1
 							}}
 						>
 							<Box
 								className={`wheel ${isSpinning ? "spinning" : ""}`}
 								sx={{
 									borderRadius: "50%",
-									top: "75%",
+									top: "50%",
+									bottom: "-50%",
 									position: "relative",
 									transition: "transform 3.5s cubic-bezier(0.33, 1, 0.68, 1)",
 									background: `conic-gradient(
